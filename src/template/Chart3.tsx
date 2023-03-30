@@ -1,76 +1,62 @@
+import { useUser } from '@supabase/auth-helpers-react';
+import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { ChartCard } from '@/chart/ChartCard';
+import type { Mood } from '@/types/moodTypes';
 
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+const Chart3 = () => {
+  const [moods, setMoods] = useState<Mood[]>([]);
+  const user = useUser();
 
-const Chart3 = () => (
-  <ChartCard title="Most used Categories">
-    <BarChart
-      data={data}
-      margin={{
-        top: 0,
-        right: 28,
-        left: 25,
-        bottom: 0,
-      }}
-    >
-      <XAxis dataKey="name" tickLine={false} axisLine={false} />
-      <YAxis tickLine={false} axisLine={false} />
-      <CartesianGrid stroke="#E5E7EB" strokeDasharray="15" vertical={false} />
-      <Tooltip cursor={{ fill: 'rgb(156, 163, 175, 0.2)' }} />
-      <Bar dataKey="pv" name="Page View" fill="#667EEA" fillOpacity={0.6} />
-      <Bar
-        dataKey="uv"
-        name="Unique Visitor"
-        fill="#06B6D4"
-        fillOpacity={0.6}
-      />
-    </BarChart>
-  </ChartCard>
-);
+  useEffect(() => {
+    async function getMoods() {
+      try {
+        const response = await fetch('/api/mood');
+        const { data: moods } = await response.json();
+        setMoods(moods as Mood[]);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    getMoods();
+  }, [user]);
+
+  // Group moods by category
+  const moodsByCategory = moods.reduce((acc, mood) => {
+    const { category } = mood;
+    if (!acc[category]) {
+      acc[category] = 0;
+    }
+    acc[category] += 1;
+    return acc;
+  }, {});
+
+  // Extract data for chart
+  const data = Object.keys(moodsByCategory).map((category) => ({
+    category,
+    count: moodsByCategory[category],
+  }));
+
+  return (
+    <ChartCard title="Most used Categories">
+      <BarChart
+        data={data}
+        margin={{
+          top: 0,
+          right: 28,
+          left: 25,
+          bottom: 0,
+        }}
+      >
+        <XAxis dataKey="category" tickLine={false} axisLine={false} />
+        <YAxis tickLine={false} axisLine={false} />
+        <CartesianGrid stroke="#E5E7EB" strokeDasharray="15" vertical={false} />
+        <Tooltip cursor={{ fill: 'rgb(156, 163, 175, 0.2)' }} />
+        <Bar dataKey="count" name="Count" fill="#667EEA" fillOpacity={0.6} />
+      </BarChart>
+    </ChartCard>
+  );
+};
 
 export { Chart3 };
