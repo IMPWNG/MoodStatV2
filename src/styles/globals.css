@@ -35,3 +35,118 @@
   background-color: #007AFF;
   color: #fff;
 }
+
+/* Style for the form container */
+.form-container {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 30px;
+  margin: 20px 0;
+}
+
+/* Style for the form title */
+.form-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Style for the form subtitle */
+.form-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-top: 15px;
+  margin-bottom: 30px;
+}
+
+/* Style for the form input label */
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Style for the form input */
+.form-input {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 100%;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Style for the form rating button */
+.form-rating-button {
+  background-color: #f2f2f2;
+  color: #666;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Style for the form rating button when selected */
+.form-rating-button.selected {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Style for the form category button */
+.form-category-button {
+  background-color: #f2f2f2;
+  color: #666;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Style for the form category button when selected */
+.form-category-button.selected {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Style for the form submit button */
+.form-submit-button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  margin-top: 30px;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Style for the form submit button when disabled */
+.form-submit-button[disabled] {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Style for the form error message */
+.form-error-message {
+  color: #f00;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}

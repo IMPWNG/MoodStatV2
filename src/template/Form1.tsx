@@ -11,6 +11,7 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
+  faCalendarAlt,
   faFileAlt,
   faHandshake,
   faTrashAlt,
@@ -46,6 +47,9 @@ const Form1 = () => {
   const [, setMessage] = useState<string>('');
   const [, setRating] = useState<number>(0);
   const [, setCategory] = useState<string>('');
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [, setStartDate] = useState<string>('');
+  const [, setEndDate] = useState<string>('');
 
   const user = useUser();
 
@@ -84,6 +88,50 @@ const Form1 = () => {
     return moods.map((mood) => mood.category).join('\n');
   };
 
+  const openDateModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeDateModal = () => {
+    setIsOpen(false);
+  };
+
+  // Add function to get moods categories by date
+  const getMoodsCategoryByDate = (startDate: string, endDate: string) => {
+    return moods
+      .filter(
+        (mood) =>
+          mood.created_at >= startDate &&
+          mood.created_at <= `${endDate} 23:59:59`
+      )
+      .map((mood) => mood.category)
+      .join('\n');
+  };
+
+  // Add function to get moods descriptions by date
+  const getMoodsDescriptionByDate = (startDate: string, endDate: string) => {
+    return moods
+      .filter(
+        (mood) =>
+          mood.created_at >= startDate &&
+          mood.created_at <= `${endDate} 23:59:59`
+      )
+      .map((mood) => mood.description)
+      .join('\n');
+  };
+
+  const saveDatePickers = () => {
+    const startDateInput = document.getElementById(
+      'startDate'
+    ) as HTMLInputElement;
+    const endDateInput = document.getElementById('endDate') as HTMLInputElement;
+    const startDate = startDateInput?.value;
+    const endDate = endDateInput?.value;
+    setStartDate(startDate);
+    setEndDate(endDate);
+    closeDateModal();
+  };
+
   const handleButtonClickResume = () => {
     setButtonDisabled(true);
     setButtonColor('red'); // add this line to change the button color to red
@@ -95,25 +143,40 @@ const Form1 = () => {
     const messageInput = document.getElementById(
       'message-input'
     ) as HTMLTextAreaElement;
+
+    // Get start date and end date values from the form
+    const startDateInput = document.getElementById(
+      'startDate'
+    ) as HTMLInputElement;
+    const endDateInput = document.getElementById('endDate') as HTMLInputElement;
+    const startDate = startDateInput?.value;
+    const endDate = endDateInput?.value;
+
     if (messageInput) {
       messageInput.value = `  
-        Forget all our precedents prompts. Let's start from scratch.
-        You're my personal analyst. You're going to help me feel better with myself.
+      Forget all our precedents prompts. Let's start from scratch.
+      You're my personal analyst. You're going to help me feel better with myself.
 
-        This is all my tought that I have been feeling : 
+      This is all my tought that I have been feeling : 
 
-        - This are the gories that I have been feeling : ${moods[0]?.category}
+      - This are the categories that I have been feeling : ${getMoodsCategoryByDate(
+        startDate,
+        endDate
+      )}
 
-        - This are the description that I have been feeling : ${getAllMoodsDescription()}
+      - This are the description that I have been feeling : ${getMoodsDescriptionByDate(
+        startDate,
+        endDate
+      )}
 
-        Never forget the line : bellow 
+      Never forget the line : bellow 
 
-        Forget about the past. It's gone. Don't worry about the future. It hasn't arrived. Live in the present. It's all you have.
+      Forget about the past. It's gone. Don't worry about the future. It hasn't arrived. Live in the present. It's all you have.
 
-        Give me a resume of all that like a personal analyst would do and give me 3 tips to improve my mood. Don't forget to give me a rating of my mood /10. Don't say you're my personal analyst. Act like a mentor without saying it.
-      `;
+      Give me a resume of all that like a personal analyst would do and give me 3 tips to improve my mood. Don't forget to give me a rating of my mood /10. Don't say you're my personal analyst. Act like a mentor without saying it.
+    `;
     }
-    handleSubmit(new Event('click')); // calling handleSubmit with a new event
+    handleSubmit(new Event('click') as any); // calling handleSubmit with a new event
     setTimeout(() => {
       handleReset();
     }, 30000);
@@ -138,7 +201,7 @@ const Form1 = () => {
           Give me only 3 tips to improve my mood. the tips can be anything.
       `;
     }
-    handleSubmit(new Event('click')); // calling handleSubmit with a new event
+    handleSubmit(new Event('click') as any); // calling handleSubmit with a new event
     setTimeout(() => {
       handleReset();
     }, 30000);
@@ -166,7 +229,7 @@ const Form1 = () => {
 
       `;
     }
-    handleSubmit(new Event('click')); // calling handleSubmit with a new event
+    handleSubmit(new Event('click') as any); // calling handleSubmit with a new event
     setTimeout(() => {
       handleReset();
     }, 30000);
@@ -330,6 +393,88 @@ const Form1 = () => {
         <div className="container mx-auto flex items-center justify-center px-4 py-3">
           <div className="flex items-center">
             <button
+              onClick={openDateModal}
+              className="mr-3 rounded-full bg-gray-400 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+            >
+              <FontAwesomeIcon
+                icon={faCalendarAlt}
+                style={{ color: '#667eea' }}
+                size="2xl"
+              />
+            </button>
+            {isOpen && (
+              <div
+                className="fixed inset-0 z-10 overflow-y-auto"
+                aria-labelledby="modal-headline"
+                role="dialog"
+                aria-modal="true"
+              >
+                <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+                  <span
+                    className="hidden sm:inline-block sm:h-screen sm:align-middle"
+                    aria-hidden="true"
+                  >
+                    &#8203;
+                  </span>
+                  <div
+                    className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="modal-headline"
+                  >
+                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                      <div className="sm:flex sm:items-start">
+                        <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                          <h3
+                            className="text-lg font-medium leading-6 text-gray-900"
+                            id="modal-headline"
+                          >
+                            Select Date Range
+                          </h3>
+                          <div className="mt-2">
+                            <form onSubmit={handleSubmit}>
+                              <FormElement colSpanSize="sm:col-span-4 mr-3">
+                                <label htmlFor="startDate">From</label>
+                                <input
+                                  id="startDate"
+                                  name="startDate"
+                                  type="date"
+                                />
+                              </FormElement>
+                              <FormElement colSpanSize="sm:col-span-4 mr-3">
+                                <label htmlFor="endDate">To</label>
+                                <input
+                                  id="endDate"
+                                  name="endDate"
+                                  type="date"
+                                />
+                              </FormElement>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                      <button
+                        onClick={saveDatePickers}
+                        className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        onClick={closeDateModal}
+                        className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button
               type="button"
               className="mr-3 rounded-full bg-gray-200 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
               onClick={handleButtonClickResume}
@@ -373,9 +518,10 @@ const Form1 = () => {
               />
               <span className="sr-only">Philo</span>
             </button>
+
             <button
               type="button"
-              className="mr-3 rounded-full bg-gray-200 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+              className="mr-3 rounded-full bg-gray-400 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
               onClick={handleReset}
             >
               <FontAwesomeIcon
@@ -399,7 +545,7 @@ const Form1 = () => {
           </FormElement>
           <button
             type="submit"
-            className="ml-3 rounded-full bg-gray-200 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+            className="ml-3 rounded-full bg-gray-400 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
           >
             <FontAwesomeIcon
               icon={faStaffSnake}
@@ -415,6 +561,3 @@ const Form1 = () => {
 };
 
 export { Form1 };
-function setButtonDisabled(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}

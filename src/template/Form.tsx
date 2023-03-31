@@ -1,10 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { useState } from 'react';
-
-import { Button } from '@/button/Button';
-import { FormElement } from '@/form/FormElement';
-import { Label } from '@/form/Label';
+import { useEffect, useState } from 'react';
 
 const PopupAlert = () => {
   return (
@@ -39,8 +35,38 @@ const Form = () => {
   const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [, setCreateCategory] = useState<string[]>([]);
   const user = useUser();
   const supabase = useSupabaseClient();
+
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const res = await fetch(`/api/mood`);
+        const { data } = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const categories = data.map((item: any) => item.category);
+        const uniqueCategories = [...new Set(categories)];
+        setCreateCategory(uniqueCategories as string[]);
+        setCategories(data);
+      } catch (error: unknown) {
+        console.log('error', error);
+      }
+    }
+    getCategories();
+  }, [user, setCategories, setCreateCategory]);
+
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const getUniqueCategories = (categories: any[]) => {
+    const uniqueCategories: any[] = [];
+    categories.forEach((category) => {
+      if (!uniqueCategories.includes(category.category)) {
+        uniqueCategories.push(category.category);
+      }
+    });
+    return uniqueCategories;
+  };
 
   const handleAddMood = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -68,13 +94,14 @@ const Form = () => {
       setIsAdded(true);
       setNewDescriptionText('');
       setCategoryText('');
+      setSelectedRating(null);
       setClicked(null);
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
       }, 2000);
-    } catch (error) {
-      console.log('error', error.message);
+    } catch (error: unknown) {
+      console.log('error', error);
     }
   };
 
@@ -83,70 +110,85 @@ const Form = () => {
     setSelectedRating(rating);
   };
 
-  const getButtonClass = (rating: number) => {
-    if (selectedRating === rating) {
-      return 'btn-green';
-    }
-  };
-
   return (
-    <div className="rounded-md border-gray-200 bg-white px-4 py-5">
+    <div className="form-container rounded-md">
       {showAlert && <PopupAlert />}
-      <div className="text-lg font-semibold text-gray-800">Add a thought</div>
-      <div className="mb-2 mt-1">
-        <p className="text-sm text-gray-500">
-          Here you can add a thought to your journal.
-        </p>
-      </div>
-      <form
-        className="grid grid-cols-1 gap-y-2 sm:grid-cols-6 sm:gap-y-5 lg:grid-cols-8"
-        onSubmit={handleAddMood}
-      >
-        <Label htmlFor="comment" colSpanSize="sm:col-start-1 sm:col-span-2">
-          Add your thought *
-        </Label>
-        <FormElement colSpanSize="sm:col-span-4">
+      <h2 className="form-title">Add a Thought</h2>
+      <p className="form-subtitle">
+        Here you can add a thought to your journal.
+      </p>
+      <form onSubmit={handleAddMood}>
+        <label htmlFor="comment" className="form-label mb-4">
+          Add a thought *
+        </label>
+        <div className="form-comment mt-4">
           <textarea
-            id="textarea"
+            id="comment"
             rows={5}
             value={newDescriptionText}
             onChange={(e) => setNewDescriptionText(e.target.value)}
+            className="form-input"
+            placeholder="Enter your thought here"
+            required
           />
-        </FormElement>
+        </div>
 
-        <Label colSpanSize="sm:col-start-1 sm:col-span-2">Rate</Label>
-        <div className="flex flex-wrap justify-center gap-3 sm:col-span-4 sm:flex-nowrap sm:justify-start sm:space-x-5">
+        <label className="form-label">Rate</label>
+        <div className="form-rating my-4">
           {Array.from({ length: 10 }, (_, index) => {
             const rating = index + 1;
             return (
-              <Button
+              <button
                 key={rating}
-                backgroundColor={getButtonClass(rating)}
+                type="button"
+                className={`form-rating-button${
+                  selectedRating && rating <= selectedRating ? ' selected' : ''
+                }`}
                 onClick={() => handleClickedButton(rating)}
               >
                 {rating}
-              </Button>
+              </button>
             );
           })}
         </div>
 
-        <Label htmlFor="category" colSpanSize="sm:col-start-1 sm:col-span-2">
+        <label htmlFor="category" className="form-label mb-4">
           Category *
-        </Label>
-        <FormElement colSpanSize="sm:col-span-4">
+        </label>
+        <div className="form-category mt-4">
           <input
             type="text"
             id="category"
             value={categoryText}
             onChange={(e) => setCategoryText(e.target.value)}
+            className="form-input"
+            placeholder="Select a category or create a new one"
+            required
           />
-        </FormElement>
-
-        <div className="sm:col-start-3">
-          <button type="submit">
-            <Button onClick={() => handleAddMood}>Add</Button>
-          </button>
+          <div className="form-category-buttons items-center justify-center text-center">
+            {getUniqueCategories(categories).map((category, index) => {
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={`form-category-button${
+                    category === categoryText ? ' selected' : ''
+                  }`}
+                  onClick={() => setCategoryText(category)}
+                >
+                  {category}
+                </button>
+              );
+            })}
+          </div>
         </div>
+        <button
+          type="submit"
+          className="form-submit-button"
+          disabled={!newDescriptionText || !categoryText || !selectedRating}
+        >
+          Add
+        </button>
       </form>
     </div>
   );

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
+import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button } from '@/button/Button';
 import { useMoods } from '@/hooks/useMoods';
@@ -10,7 +11,46 @@ import type { Mood } from '@/types/moodTypes';
 const Table = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { moods, deleteMood } = useMoods();
+  const { moods, deleteMood, modifyMood } = useMoods();
+  const [isOpen, setIsOpen] = useState(false);
+  const [categoryText, setCategoryText] = useState<string>('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [rating, setRating] = useState<Mood['rating'] | null>(null);
+  const [created_at, setCreated_at] = useState('');
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [openMood, setOpenMood] = useState<Mood | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [, setCreateCategory] = useState<string[]>([]);
+  const user = useUser();
+
+  useEffect(() => {
+    async function getCategories() {
+      try {
+        const res = await fetch(`/api/mood`);
+        const { data } = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const categories = data.map((item: any) => item.category);
+        const uniqueCategories = [...new Set(categories)];
+        setCreateCategory(uniqueCategories as string[]);
+        setCategories(data);
+      } catch (error: unknown) {
+        console.log('error', error);
+      }
+    }
+    getCategories();
+  }, [user, setCategories, setCreateCategory]);
+
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const getUniqueCategories = (categories: any[]) => {
+    const uniqueCategories: any[] = [];
+    categories.forEach((category) => {
+      if (!uniqueCategories.includes(category.category)) {
+        uniqueCategories.push(category.category);
+      }
+    });
+    return uniqueCategories;
+  };
 
   const formatDateTime = (dateTimeString = '') => {
     const date = new Date(dateTimeString);
@@ -25,7 +65,6 @@ const Table = () => {
   };
 
   const handleDelete = async (id: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     setShowAlert(true);
     setIsLoading(true);
     await deleteMood(id);
@@ -33,7 +72,17 @@ const Table = () => {
     setTimeout(() => {
       setIsLoading(false);
       setShowAlert(false);
+      setOpenMood(null);
     }, 3000);
+  };
+
+  const openModal = (mood: Mood | null) => {
+    setOpenMood(mood);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
   };
 
   const Spinner = () => {
@@ -59,6 +108,224 @@ const Table = () => {
             d="M4 12a8 8 0 018-8v8z"
           />
         </svg>
+      </div>
+    );
+  };
+
+  const ModifyModal = ({
+    mood,
+    isOpen,
+    onClose,
+  }: {
+    mood: Mood;
+    isOpen: boolean;
+    onClose: () => void;
+  }) => {
+    const [description, setDescription] = useState(mood?.description ?? '');
+    const [category, setCategory] = useState(mood?.category ?? '');
+    const [rating, setRating] = useState<Mood['rating'] | null>(
+      mood?.rating ?? null
+    );
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const [created_at, setCreated_at] = useState(mood?.created_at ?? '');
+
+    return (
+      <div
+        className={`${
+          isOpen ? 'block' : 'hidden'
+        } fixed inset-0 z-10 overflow-y-auto`}
+        aria-labelledby="modal-title"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+          <span
+            className="hidden sm:inline-block sm:h-screen sm:align-middle"
+            aria-hidden="true"
+          >
+            &#8203;
+          </span>
+          <div
+            className="inline-block overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-headline"
+          >
+            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start">
+                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                  <h3
+                    className="text-lg font-medium leading-6 text-gray-900"
+                    id="modal-headline"
+                  >
+                    {mood ? 'Modify Mood' : 'Create Mood'}
+                  </h3>
+                  <div className="mt-2">
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        if (
+                          !description ||
+                          !rating ||
+                          !category ||
+                          !created_at
+                        ) {
+                          return;
+                        }
+                        if (mood) {
+                          modifyMood(mood.id, {
+                            description,
+                            category,
+                            rating,
+                            created_at,
+                            id: 0,
+                            user_id: undefined,
+                          });
+                        } else {
+                          createMood({
+                            description,
+                            category,
+                            rating,
+                            created_at,
+                          });
+                        }
+                        onClose();
+                      }}
+                    >
+                      <div className="mb-4">
+                        <label
+                          className="mb-2 block text-sm font-bold text-gray-700"
+                          htmlFor="description"
+                        >
+                          Description
+                        </label>
+                        <input
+                          className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                          id="description"
+                          type="text"
+                          placeholder="Description"
+                          name="description"
+                          value={description}
+                          onChange={(event) =>
+                            setDescription(event.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          className="mb-2 block text-sm font-bold text-gray-700"
+                          htmlFor="rating"
+                        >
+                          Rating
+                        </label>
+                        <select
+                          className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                          id="rating"
+                          name="rating"
+                          value={rating}
+                          onChange={(event) =>
+                            setRating(Number(event.target.value))
+                          }
+                        >
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          className="mb-2 block text-sm font-bold text-gray-700"
+                          htmlFor="category"
+                        >
+                          Category
+                        </label>
+                        {getUniqueCategories(categories).map(
+                          (category, index) => {
+                            return (
+                              <button
+                                key={index}
+                                type="button"
+                                className={`form-category-button${
+                                  category === categoryText ? ' selected' : ''
+                                }`}
+                                onClick={() => setCategoryText(category)}
+                              >
+                                {category}
+                              </button>
+                            );
+                          }
+                        )}
+                      </div>
+                      <div className="mb-4">
+                        <label
+                          className="mb-2 block text-sm font-bold text-gray-700"
+                          htmlFor="created_at"
+                        >
+                          Date
+                        </label>
+                        <input
+                          className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
+                          id="created_at"
+                          type="date"
+                          name="created_at"
+                          value={created_at}
+                          onChange={(event) =>
+                            setCreated_at(event.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          className="inline-flex items-center rounded bg-gray-200 px-4 py-2 font-bold text-gray-800 hover:bg-gray-300"
+                          onClick={onClose}
+                        >
+                          <svg
+                            className="mr-2 h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M6 18L18 6M6 6l12 12"
+                            ></path>
+                          </svg>
+                          <span>Cancel</span>
+                        </button>
+                        <button
+                          type="submit"
+                          className="ml-2 inline-flex items-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                        >
+                          <svg
+                            className="mr-2 h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13 10V3L4 14h7v7l9-11h-7z"
+                            ></path>
+                          </svg>
+                          <span>{mood ? 'Modify' : 'Create'}</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -93,6 +360,9 @@ const Table = () => {
     <>
       {isLoading && <Spinner />}
       {showAlert && <PopupAlert />}
+      {openMood && (
+        <ModifyModal mood={openMood} isOpen={isOpen} onClose={closeModal} />
+      )}
       <DetailTable
         head={
           <tr>
@@ -145,7 +415,12 @@ const Table = () => {
               <td>{mood.category}</td>
               <td>{formatDateTime(mood.created_at)}</td>
               <td>
-                <Button sm secondary backgroundColor="btn-yellow mr-2">
+                <Button
+                  sm
+                  secondary
+                  backgroundColor="btn-yellow mr-2"
+                  onClick={() => openModal(mood)}
+                >
                   Edit
                 </Button>
                 <Button
