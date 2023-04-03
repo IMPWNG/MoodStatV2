@@ -20,7 +20,7 @@ const LoginForm = () => {
     }
   }, [user]);
 
-  if (!user)
+  if (!user) {
     return (
       <FullCenterSection title="Sign in to your account">
         <Auth
@@ -32,6 +32,8 @@ const LoginForm = () => {
         />
       </FullCenterSection>
     );
+  }
+  return null;
 };
 
 export { LoginForm };
