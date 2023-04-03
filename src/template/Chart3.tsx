@@ -13,9 +13,11 @@ const Chart3 = () => {
     async function getMoods() {
       try {
         const response = await fetch('/api/mood');
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { data: moods } = await response.json();
         setMoods(moods as Mood[]);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
     }
@@ -23,7 +25,7 @@ const Chart3 = () => {
   }, [user]);
 
   // Group moods by category
-  const moodsByCategory = moods.reduce((acc, mood) => {
+  const moodsByCategory = moods.reduce((acc: Record<string, number>, mood) => {
     const { category } = mood;
     if (!acc[category]) {
       acc[category] = 0;

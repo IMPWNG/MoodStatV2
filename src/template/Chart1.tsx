@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 import { useUser } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
 import {
@@ -24,6 +25,7 @@ const Chart1 = () => {
         const { data: moods } = await response.json();
         setMoods(moods as Mood[]);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
     }
@@ -31,12 +33,12 @@ const Chart1 = () => {
   }, [user]);
 
   // Group moods by date
-  const moodsByDate = moods.reduce((acc, mood) => {
+  const moodsByDate = moods.reduce((acc: Record<string, Mood[]>, mood) => {
     const date = new Date(mood.created_at).toLocaleDateString();
     if (!acc[date]) {
       acc[date] = [];
     }
-    acc[date].push(mood);
+    acc[date]?.push(mood);
     return acc;
   }, {});
 
@@ -44,8 +46,10 @@ const Chart1 = () => {
   const data = Object.keys(moodsByDate).map((date) => ({
     date,
     rating:
-      moodsByDate[date].reduce((acc, mood) => acc + mood.rating, 0) /
-      moodsByDate[date].length,
+      (moodsByDate[date]?.reduce(
+        (acc: number, mood: Mood) => acc + mood.rating,
+        0
+      ) ?? 0) / (moodsByDate[date]?.length ?? 1),
   }));
 
   return (

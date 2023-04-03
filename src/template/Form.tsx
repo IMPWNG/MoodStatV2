@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
@@ -47,7 +48,7 @@ const Form = () => {
         const { data } = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const categories = data.map((item: any) => item.category);
-        const uniqueCategories = [...new Set(categories)];
+        const uniqueCategories = Array.from(new Set(categories));
         setCreateCategory(uniqueCategories as string[]);
         setCategories(data);
       } catch (error: unknown) {

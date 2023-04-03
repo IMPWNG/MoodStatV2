@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable no-console */
 import { useUser } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
@@ -8,7 +10,6 @@ import type { Mood } from '@/types/moodTypes';
 const Chart4 = () => {
   const [moods, setMoods] = useState<Mood[]>([]);
   const user = useUser();
-  console.log(moods);
 
   useEffect(() => {
     async function getMoods() {
@@ -23,12 +24,12 @@ const Chart4 = () => {
     getMoods();
   }, [user]);
 
-  const wordsCount = {};
+  const wordsCount: Record<string, number | undefined> = {};
 
-  moods?.forEach((mood) => {
+  moods.forEach((mood) => {
     const words = mood.description.split(' ');
     words.forEach((word) => {
-      wordsCount[word] = wordsCount[word] ? wordsCount[word] + 1 : 1;
+      wordsCount[word] = wordsCount[word] ? wordsCount[word]! + 1 : 1;
     });
   });
 
@@ -38,11 +39,11 @@ const Chart4 = () => {
       value: wordsCount[word],
     }))
     .filter((data) => data.name.length >= 4) // exclude words with length less than 4
-    .sort((a, b) => b.value - a.value);
+    .sort((a, b) => b.value! - a.value!);
 
   const filteredData = sortedData
-    .slice(0, moods?.length)
-    .filter((item) => item.value > 5);
+    .slice(0, moods.length) // Remove optional chaining here
+    .filter((item) => item.value! > 5);
 
   return (
     <ChartCard title="Most used word">

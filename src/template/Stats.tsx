@@ -28,10 +28,9 @@ const Stats = () => {
     if (!Array.isArray(moods)) {
       return null;
     }
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    moods.forEach((mood: { category?: any }) => {
-      const category = mood?.category;
-      if (category !== undefined) {
+    moods.forEach((mood) => {
+      const category = mood?.category ?? null;
+      if (category !== null) {
         if (category in categoryCounts) {
           categoryCounts[category] += 1;
         } else {
@@ -45,7 +44,7 @@ const Stats = () => {
     ).sort((a, b) => b[1] - a[1]);
 
     if (sortedCategories.length > 0) {
-      return sortedCategories[0][0];
+      return sortedCategories[0]![0];
     }
     return null;
   };
@@ -56,10 +55,9 @@ const Stats = () => {
     if (!Array.isArray(moods)) {
       return null;
     }
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    moods.forEach((mood: { category?: any }) => {
-      const category = mood?.category;
-      if (category !== undefined) {
+    moods.forEach((mood) => {
+      const category = mood?.category ?? null;
+      if (category !== null) {
         if (category in categoryCounts) {
           categoryCounts[category] += 1;
         } else {
@@ -73,7 +71,7 @@ const Stats = () => {
     ).sort((a, b) => a[1] - b[1]);
 
     if (sortedCategories.length > 0) {
-      return sortedCategories[0][0];
+      return sortedCategories[0]![0];
     }
     return null;
   };

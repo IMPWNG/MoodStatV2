@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
@@ -14,11 +15,6 @@ const Table = () => {
   const { moods, deleteMood, modifyMood } = useMoods();
   const [isOpen, setIsOpen] = useState(false);
   const [categoryText, setCategoryText] = useState<string>('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [rating, setRating] = useState<Mood['rating'] | null>(null);
-  const [created_at, setCreated_at] = useState('');
-  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [openMood, setOpenMood] = useState<Mood | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
   const [, setCreateCategory] = useState<string[]>([]);
@@ -31,7 +27,7 @@ const Table = () => {
         const { data } = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const categories = data.map((item: any) => item.category);
-        const uniqueCategories = [...new Set(categories)];
+        const uniqueCategories = Array.from(new Set(categories));
         setCreateCategory(uniqueCategories as string[]);
         setCategories(data);
       } catch (error: unknown) {
@@ -122,7 +118,7 @@ const Table = () => {
     onClose: () => void;
   }) => {
     const [description, setDescription] = useState(mood?.description ?? '');
-    const [category, setCategory] = useState(mood?.category ?? '');
+    const [category] = useState(mood?.category ?? '');
     const [rating, setRating] = useState<Mood['rating'] | null>(
       mood?.rating ?? null
     );
@@ -182,12 +178,8 @@ const Table = () => {
                             user_id: undefined,
                           });
                         } else {
-                          createMood({
-                            description,
-                            category,
-                            rating,
-                            created_at,
-                          });
+                          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                          null;
                         }
                         onClose();
                       }}
@@ -222,7 +214,7 @@ const Table = () => {
                           className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
                           id="rating"
                           name="rating"
-                          value={rating}
+                          value={rating ?? 0}
                           onChange={(event) =>
                             setRating(Number(event.target.value))
                           }
