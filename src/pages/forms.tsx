@@ -1,18 +1,40 @@
+import { useUser } from '@supabase/auth-helpers-react';
+import { Button } from 'flowbite-react';
+import Link from 'next/link';
+
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { Form } from '@/template/Form';
 import Shell from '@/template/Shell';
 import { AppConfig } from '@/utils/AppConfig';
 
-const Index = () => (
-  <>
-    <Meta title={AppConfig.title} description={AppConfig.description} />
-    <Shell title="Add">
-      <Section>
-        <Form />
-      </Section>
-    </Shell>
-  </>
-);
+const Index = () => {
+  const user = useUser();
+  return (
+    <>
+      <Meta title={AppConfig.title} description={AppConfig.description} />
+      <Shell title="Add">
+        {user ? (
+          <>
+            <Section>
+              <Form />
+            </Section>
+          </>
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center space-y-6 p-6 text-center">
+            <h1 className="text-4xl font-bold text-gray-800">
+              Welcome to Mood Tracker!
+            </h1>
+            <Link href="/login">
+              <Button className="rounded bg-indigo-600 px-4 py-2 font-bold text-white hover:bg-indigo-700">
+                Login
+              </Button>
+            </Link>
+          </div>
+        )}
+      </Shell>
+    </>
+  );
+};
 
 export default Index;

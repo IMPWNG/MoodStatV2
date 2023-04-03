@@ -2,7 +2,7 @@ import { useUser } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { ChartCard } from '@/chart/ChartCard';
+import { ChartCard } from '@/components/chart/ChartCard';
 import type { Mood } from '@/types/moodTypes';
 
 const Chart3 = () => {

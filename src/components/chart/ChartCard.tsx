@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/classnames-order */
 import type { ReactElement } from 'react';
 import { ResponsiveContainer } from 'recharts';
 

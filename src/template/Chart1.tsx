@@ -10,7 +10,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { ChartCard } from '@/chart/ChartCard';
+import { ChartCard } from '@/components/chart/ChartCard';
 import type { Mood } from '@/types/moodTypes';
 
 const Chart1 = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { StatsCard } from '@/components/stats/StatsCard';
 import { useMoods } from '@/hooks/useMoods';
-import { StatsCard } from '@/stats/StatsCard';
 import type { Mood } from '@/types/moodTypes';
 
 const Stats = () => {

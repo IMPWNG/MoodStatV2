@@ -4,9 +4,9 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { Button } from '@/button/Button';
-import { SidebarHeader } from '@/shell/SidebarHeader';
-import { SidebarLink } from '@/shell/SidebarLink';
+import { Button } from '@/components/button/Button';
+import { SidebarHeader } from '@/components/shell/SidebarHeader';
+import { SidebarLink } from '@/components/shell/SidebarLink';
 
 type IShellProps = {
   title: string;
@@ -21,7 +21,6 @@ const Shell = (props: IShellProps) => {
     const { error } = await supabaseClient.auth.signOut();
     if (error) console.log('Error logging out:', error.message);
   };
-
   return (
     <SidebarHeader
       title={props.title}

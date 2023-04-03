@@ -4,9 +4,9 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { Button } from '@/button/Button';
+import { Button } from '@/components/button/Button';
+import { DetailTable } from '@/components/table/DetailTable';
 import { useMoods } from '@/hooks/useMoods';
-import { DetailTable } from '@/table/DetailTable';
 import type { Mood } from '@/types/moodTypes';
 
 const Table = () => {

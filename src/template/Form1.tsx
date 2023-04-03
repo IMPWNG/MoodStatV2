@@ -23,7 +23,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import useSWR from 'swr';
 
-import { FormElement } from '@/form/FormElement';
+import { FormElement } from '@/components/form/FormElement';
 import type { Mood } from '@/types/moodTypes';
 
 interface ModelType {
