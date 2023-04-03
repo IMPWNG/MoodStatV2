@@ -40,7 +40,7 @@ const Chart1 = () => {
     }
     acc[date]?.push(mood);
     return acc;
-  }, {});
+  }, {} as Record<string, Mood[]>); // Add the "as Record<string, Mood[]>" part
 
   // Extract data for chart
   const data = Object.keys(moodsByDate).map((date) => ({
