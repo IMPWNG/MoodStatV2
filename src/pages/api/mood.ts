@@ -16,7 +16,9 @@ export default async function handler(
         const { data, error } = await supabase
           .from('stats')
           .select('*')
-          .order('id', { ascending: false });
+          .order('id', { ascending: false })
+          .limit(10)
+          .eq('user_id', req.body.user_id);
         if (error) {
           throw new Error(error.message);
         }

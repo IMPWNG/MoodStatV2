@@ -22,13 +22,6 @@ const LoginForm = () => {
   const handleLogInWithGoogle = async () => {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: 'http://localhost:3000',
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
     });
     if (error) {
       console.log('Error logging in with Google:', error.message);
