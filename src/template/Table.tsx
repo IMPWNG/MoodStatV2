@@ -385,9 +385,9 @@ const Table = () => {
           </>
         }
         pagination={{
-          stats: '1 - 10 of 350',
-          current: 2,
-          nbPage: 5,
+          stats: 'All',
+          current: 1,
+          nbPage: 1,
           href: '/tables',
         }}
       >

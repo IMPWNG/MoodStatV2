@@ -103,7 +103,6 @@ const Shell = (props: IShellProps) => {
               Ai - Resume
             </SidebarLink>
           </Link>
-          <div>{user?.email}</div>
         </>
       }
       bottomLinks={<></>}
