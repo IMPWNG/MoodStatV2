@@ -105,7 +105,31 @@ const Shell = (props: IShellProps) => {
           </Link>
         </>
       }
-      bottomLinks={<></>}
+      bottomLinks={
+        <>
+          <div className="flex flex-col items-center justify-center space-y-6 p-6 text-center">
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <div className="flex items-center justify-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-6 w-6"
+                >
+                  <path d="M0 0h24v24H0z" stroke="none" />
+                  <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.656 5.656l2.828 2.828M16.172 16.172l2.828 2.828M5.656 16.172l2.828-2.828M16.172 5.656l2.828-2.828" />
+                </svg>
+                <span className="text-sm font-medium">Made with</span>
+              </div>
+              <span className="text-sm font-medium">Next.js + Supabase</span>
+            </div>
+          </div>
+        </>
+      }
       leftContent={
         <>
           {user ? (

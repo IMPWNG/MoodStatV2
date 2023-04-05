@@ -8,6 +8,11 @@ import type { Mood } from '@/types/moodTypes';
 interface MoodsData {
   moods: Mood[];
   fetchMoods: (userId: string) => Promise<void>;
+  fetchMoodsByDateRange: (
+    userId: string,
+    from: string,
+    to: string
+  ) => Promise<void>;
   deleteMood: (id: number) => Promise<void>;
   modifyMood: (id: number, mood: Mood) => Promise<void>;
 }
@@ -26,6 +31,28 @@ export const useMoods = (): MoodsData => {
         }
         const { data } = await response.json();
         // console.log('dataArrayforHook', data);
+        setMoods(data);
+      }
+    } catch (error) {
+      console.error(error);
+      setMoods([]);
+    }
+  };
+
+  const fetchMoodsByDateRange = async (
+    userId: string,
+    from: string,
+    to: string
+  ) => {
+    try {
+      if (userId) {
+        const response = await fetch(
+          `/api/mood/?user_id=${userId}&from=${from}&to=${to}`
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch moods');
+        }
+        const { data } = await response.json();
         setMoods(data);
       }
     } catch (error) {
@@ -74,5 +101,5 @@ export const useMoods = (): MoodsData => {
     }
   };
 
-  return { moods, fetchMoods, deleteMood, modifyMood };
+  return { moods, fetchMoods, deleteMood, modifyMood, fetchMoodsByDateRange };
 };

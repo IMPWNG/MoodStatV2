@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import { Button } from '@/components/button/Button';
+import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { DetailTable } from '@/components/table/DetailTable';
 import { useMoods } from '@/hooks/useMoods';
 import type { Mood } from '@/types/moodTypes';
@@ -356,6 +357,9 @@ const Table = () => {
       {openMood && (
         <ModifyModal mood={openMood} isOpen={isOpen} onClose={closeModal} />
       )}
+      <div className="mb-4 flex flex-col">
+      <MoodSearchByDate  />
+      </div>
       <DetailTable
         head={
           <tr>

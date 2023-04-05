@@ -24,6 +24,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 
 import { FormElement } from '@/components/form/FormElement';
+import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import type { Mood } from '@/types/moodTypes';
 
 interface ModelType {
@@ -323,6 +324,9 @@ const Form1 = () => {
 
   return (
     <>
+      <div className="mb-4 flex flex-col">
+        <MoodSearchByDate />
+      </div>
       {isLoading ? (
         <div className="mt-2 text-center">
           <div className="inline-flex items-center justify-center space-x-2">

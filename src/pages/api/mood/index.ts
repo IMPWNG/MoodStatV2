@@ -17,6 +17,8 @@ export default async function Handler(
     case 'GET':
       try {
         const userId = req.query.user_id?.toString();
+        const fromDate = req.query.from?.toString();
+        const toDate = req.query.to?.toString();
         // console.log('Get userId:', userId);
         // console.log('userId in API route:', userId);
         // console.log('Request parameters in API route:', req.query);
@@ -34,6 +36,17 @@ export default async function Handler(
         // );
         // console.log('Supabase query result:', { data, error });
         // console.log('Database query response:', { data, error });
+        if (fromDate && toDate) {
+          const filteredData = data?.filter(
+            (mood) =>
+              new Date(mood.created_at).getTime() >=
+                new Date(fromDate).getTime() &&
+              new Date(mood.created_at).getTime() <= new Date(toDate).getTime()
+          );
+          res.status(200).json({ data: filteredData as Mood[] });
+          return;
+        }
+
         if (error) {
           throw new Error(error.message);
         }

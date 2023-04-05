@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useMemo } from 'react';
 
+import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { StatsCard } from '@/components/stats/StatsCard';
 import type { Mood } from '@/types/moodTypes';
 
@@ -45,82 +46,87 @@ const Stats = ({ moods }: { moods: Mood[] }) => {
     }, [moods]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        }
-        text="Most used category"
-        iconColor="bg-green-500"
-      >
-        {mostUsedCategory}
-      </StatsCard>
-      <StatsCard
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#000"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M5 12h14" />
-          </svg>
-        }
-        text="Less used category"
-        iconColor="bg-red-500"
-      >
-        {leastUsedCategory}
-      </StatsCard>
-      <StatsCard
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M12 17V7" />
-            <path d="M12 17l5-5M12 17l-5-5" />
-            <circle cx="6" cy="19" r="2" />
-            <circle cx="17" cy="19" r="2" />
-          </svg>
-        }
-        text="Average Rating"
-      >
-        {averageRating}
-      </StatsCard>
-      <StatsCard
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M0 0h24v24H0z" stroke="none" />
-            <path d="M4 21V8a3 3 0 013-3h10a3 3 0 013 3v6a3 3 0 01-3 3H8l-4 4M8 9h8M8 13h6" />
-          </svg>
-        }
-        text="Entries this year"
-      >
-        {countMoodsYear}
-      </StatsCard>
-    </div>
+    <>
+      <div className="mb-4 flex flex-col">
+        <MoodSearchByDate />
+      </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <StatsCard
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M0 0h24v24H0z" stroke="none" />
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          }
+          text="Most used category"
+          iconColor="bg-green-500"
+        >
+          {mostUsedCategory}
+        </StatsCard>
+        <StatsCard
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#000"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M0 0h24v24H0z" stroke="none" />
+              <path d="M5 12h14" />
+            </svg>
+          }
+          text="Less used category"
+          iconColor="bg-red-500"
+        >
+          {leastUsedCategory}
+        </StatsCard>
+        <StatsCard
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M0 0h24v24H0z" stroke="none" />
+              <path d="M12 17V7" />
+              <path d="M12 17l5-5M12 17l-5-5" />
+              <circle cx="6" cy="19" r="2" />
+              <circle cx="17" cy="19" r="2" />
+            </svg>
+          }
+          text="Average Rating"
+        >
+          {averageRating}
+        </StatsCard>
+        <StatsCard
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M0 0h24v24H0z" stroke="none" />
+              <path d="M4 21V8a3 3 0 013-3h10a3 3 0 013 3v6a3 3 0 01-3 3H8l-4 4M8 9h8M8 13h6" />
+            </svg>
+          }
+          text="Entries this year"
+        >
+          {countMoodsYear}
+        </StatsCard>
+      </div>
+    </>
   );
 };
 
