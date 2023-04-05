@@ -36,7 +36,7 @@ const Form = () => {
   const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ category: string }[]>([]);
   const [, setCreateCategory] = useState<string[]>([]);
   const user = useUser();
   const supabase = useSupabaseClient();
@@ -44,7 +44,7 @@ const Form = () => {
   useEffect(() => {
     async function getCategories() {
       try {
-        const res = await fetch(`/api/mood`);
+        const res = await fetch(`/api/mood/?user_id=${user?.id}`);
         const { data } = await res.json();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const categories = data.map((item: any) => item.category);
@@ -59,11 +59,12 @@ const Form = () => {
   }, [user, setCategories, setCreateCategory]);
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getUniqueCategories = (categories: any[]) => {
-    const uniqueCategories: any[] = [];
-    categories.forEach((category) => {
-      if (!uniqueCategories.includes(category.category)) {
-        uniqueCategories.push(category.category);
+  const getUniqueCategories = (categories: { category: string }[]) => {
+    const uniqueCategories: string[] = [];
+    categories.forEach((categoryObj) => {
+      const { category } = categoryObj;
+      if (!uniqueCategories.includes(category)) {
+        uniqueCategories.push(category);
       }
     });
     return uniqueCategories;
@@ -80,7 +81,7 @@ const Form = () => {
     }
 
     try {
-      const { error } = await supabase.from('stats').insert([
+      const { error } = await supabase.from('stats_mood').insert([
         {
           description,
           rating: clicked,
@@ -91,6 +92,14 @@ const Form = () => {
 
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       if (error) throw error;
+
+      // Update categories state with the new category
+      setCategories((prevCategories) => {
+        const updatedCategories = [...prevCategories, { category }];
+        const uniqueCategories = getUniqueCategories(updatedCategories);
+        setCreateCategory(uniqueCategories);
+        return updatedCategories;
+      });
 
       setIsAdded(true);
       setNewDescriptionText('');

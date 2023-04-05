@@ -1,97 +1,48 @@
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-shadow */
+import React, { useMemo } from 'react';
 
 import { StatsCard } from '@/components/stats/StatsCard';
-import { useMoods } from '@/hooks/useMoods';
 import type { Mood } from '@/types/moodTypes';
 
-const Stats = () => {
-  const moods = useMoods();
+const Stats = ({ moods }: { moods: Mood[] }) => {
+  const { countMoodsYear, mostUsedCategory, leastUsedCategory, averageRating } =
+    useMemo(() => {
+      const currentYear = new Date().getFullYear();
+      const moodsThisYear = [];
+      const categoryCounts: { [key: string]: number } = {};
+      let sumRatings = 0;
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const countMoodsYear = (moods: Mood[]) => {
-    const currentYear = new Date(2023, 0, 1);
-    if (!Array.isArray(moods)) {
-      return 0;
-    }
+      moods.forEach((mood) => {
+        const moodDate = new Date(mood.created_at);
+        const category = mood?.category ?? null;
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const moodsThisYear = moods.filter((mood) => {
-      const moodDate = new Date(mood.created_at);
-      return moodDate.getFullYear() === currentYear.getFullYear();
-    });
-    return moodsThisYear.length;
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getMostUsedCategory = (moods: Mood[]) => {
-    const categoryCounts: { [key: string]: number } = {};
-    if (!Array.isArray(moods)) {
-      return null;
-    }
-    moods.forEach((mood) => {
-      const category = mood?.category ?? null;
-      if (category !== null) {
-        if (category in categoryCounts) {
-          categoryCounts[category] += 1;
-        } else {
-          categoryCounts[category] = 1;
+        if (moodDate.getFullYear() === currentYear) {
+          moodsThisYear.push(mood);
         }
-      }
-    });
 
-    const sortedCategories: [string, number][] = Object.entries(
-      categoryCounts
-    ).sort((a, b) => b[1] - a[1]);
-
-    if (sortedCategories.length > 0) {
-      return sortedCategories[0]![0];
-    }
-    return null;
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getLessUsedCategory = (moods: Mood[]) => {
-    const categoryCounts: { [key: string]: number } = {};
-    if (!Array.isArray(moods)) {
-      return null;
-    }
-    moods.forEach((mood) => {
-      const category = mood?.category ?? null;
-      if (category !== null) {
-        if (category in categoryCounts) {
-          categoryCounts[category] += 1;
-        } else {
-          categoryCounts[category] = 1;
+        if (category !== null) {
+          categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         }
-      }
-    });
 
-    const sortedCategories: [string, number][] = Object.entries(
-      categoryCounts
-    ).sort((a, b) => a[1] - b[1]);
+        sumRatings += mood.rating;
+      });
 
-    if (sortedCategories.length > 0) {
-      return sortedCategories[0]![0];
-    }
-    return null;
-  };
+      const sortedCategories = Object.entries(categoryCounts).sort(
+        (a, b) => b[1] - a[1]
+      );
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getAverageRating = (moods: Mood[]) => {
-    if (!Array.isArray(moods) || moods.length === 0) {
-      return 0;
-    }
+      const mostUsedCategory = sortedCategories[0]?.[0] || null;
+      const leastUsedCategory =
+        sortedCategories[sortedCategories.length - 1]?.[0] || null;
+      const averageRating = sumRatings / moods.length || 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const ratings = moods.map((mood: { rating: number }) => mood.rating);
-    const sum = ratings.reduce(
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      (sum: number, rating: number) => sum + rating,
-      0
-    );
-    const averageRating = sum / ratings.length;
-    return averageRating.toFixed(1);
-  };
+      return {
+        countMoodsYear: moodsThisYear.length,
+        mostUsedCategory,
+        leastUsedCategory,
+        averageRating: averageRating.toFixed(1),
+      };
+    }, [moods]);
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -111,7 +62,7 @@ const Stats = () => {
         text="Most used category"
         iconColor="bg-green-500"
       >
-        {getMostUsedCategory(moods.moods)}
+        {mostUsedCategory}
       </StatsCard>
       <StatsCard
         icon={
@@ -130,7 +81,7 @@ const Stats = () => {
         text="Less used category"
         iconColor="bg-red-500"
       >
-        {getLessUsedCategory(moods.moods)}
+        {leastUsedCategory}
       </StatsCard>
       <StatsCard
         icon={
@@ -150,7 +101,7 @@ const Stats = () => {
         }
         text="Average Rating"
       >
-        {getAverageRating(moods.moods)}
+        {averageRating}
       </StatsCard>
       <StatsCard
         icon={
@@ -167,7 +118,7 @@ const Stats = () => {
         }
         text="Entries this year"
       >
-        {countMoodsYear(moods.moods)}
+        {countMoodsYear}
       </StatsCard>
     </div>
   );

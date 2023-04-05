@@ -4,8 +4,6 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 
 import { config } from '@fortawesome/fontawesome-svg-core';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { SessionContextProvider, useUser } from '@supabase/auth-helpers-react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import moment from 'moment-timezone';
@@ -17,6 +15,8 @@ import { SWRConfig } from 'swr';
 
 // eslint-disable-next-line import/order
 import { fetcher } from '@/utils/fetcher';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { createBrowserSupabaseClient } from '@/utils/supabase';
 
 config.autoAddCss = false;
 

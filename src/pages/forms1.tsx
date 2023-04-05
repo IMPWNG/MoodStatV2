@@ -1,4 +1,4 @@
-import { useUser } from '@supabase/auth-helpers-react';
+import { useSession } from '@supabase/auth-helpers-react';
 import { Button } from 'flowbite-react';
 import Link from 'next/link';
 
@@ -9,12 +9,12 @@ import Shell from '@/template/Shell';
 import { AppConfig } from '@/utils/AppConfig';
 
 const Index = () => {
-  const user = useUser();
+  const session = useSession();
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
       <Shell title="Add">
-        {user ? (
+        {session ? (
           <>
             <Section>
               <Form1 />

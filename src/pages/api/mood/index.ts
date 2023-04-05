@@ -1,35 +1,56 @@
+/* eslint-disable no-console */
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import type { Mood } from '@/types/moodTypes';
 import { supabase } from '@/utils/supabase';
 
-export default async function handler(
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export default async function Handler(
   req: NextApiRequest,
   res: NextApiResponse<{ data: Mood[]; error?: Error | PostgrestError }>
 ) {
   const { method } = req;
-
   switch (method) {
     case 'GET':
       try {
+        const userId = req.query.user_id?.toString();
+        // console.log('Get userId:', userId);
+        // console.log('userId in API route:', userId);
+        // console.log('Request parameters in API route:', req.query);
+
+        if (!userId || !UUID_REGEX.test(userId)) {
+          throw new Error('No user_id provided');
+        }
         const { data, error } = await supabase
-          .from('stats')
+          .from('stats_mood')
           .select('*')
-          .order('id', { ascending: false })
-          .limit(10)
-          .eq('user_id', req.body.user_id);
+          .eq('user_id', userId);
+        // console.log(
+        //   'Supabase query:',
+        //   supabase.from('stats_mood').select('*').eq('user_id', userId)
+        // );
+        // console.log('Supabase query result:', { data, error });
+        // console.log('Database query response:', { data, error });
         if (error) {
           throw new Error(error.message);
         }
+        if (!data || data.length === 0) {
+          console.log('No data found for user_id:', req.query.user_id);
+        }
+
         res.status(200).json({ data: data as Mood[] });
       } catch (error) {
+        console.log('GET request error:', error);
         res.status(400).json({ data: [], error: error as Error });
       }
       break;
+
     case 'POST':
       try {
-        const { data, error } = await supabase.from('stats').insert([
+        const { data, error } = await supabase.from('stats_mood').insert([
           {
             description: req.body.description,
             category: req.body.category,
@@ -48,9 +69,9 @@ export default async function handler(
     case 'DELETE':
       try {
         const { data, error } = await supabase
-          .from('stats')
+          .from('stats_mood')
           .delete()
-          .match({ id: req.body.id });
+          .match({ id: Number(req.query.id) });
         if (error) {
           throw new Error(error.message);
         }
@@ -62,7 +83,7 @@ export default async function handler(
     case 'PUT':
       try {
         const { data, error } = await supabase
-          .from('stats')
+          .from('stats_mood')
           .update({
             description: req.body.description,
             category: req.body.category,

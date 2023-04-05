@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { useUser } from '@supabase/auth-helpers-react';
@@ -23,8 +24,8 @@ const Table = () => {
   useEffect(() => {
     async function getCategories() {
       try {
-        const res = await fetch(`/api/mood`);
-        const { data } = await res.json();
+        const response = await fetch(`/api/mood/?user_id=${user?.id}`);
+        const { data } = await response.json();
         // eslint-disable-next-line @typescript-eslint/no-shadow
         const categories = data.map((item: any) => item.category);
         const uniqueCategories = Array.from(new Set(categories));
@@ -175,7 +176,7 @@ const Table = () => {
                             rating,
                             created_at,
                             id: 0,
-                            user_id: undefined,
+                            user_id: "", // eslint-disable-line @typescript-eslint/naming-convention
                           });
                         } else {
                           // eslint-disable-next-line @typescript-eslint/no-unused-expressions

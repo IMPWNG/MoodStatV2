@@ -1,46 +1,58 @@
+/* eslint-disable no-template-curly-in-string */
 /* eslint-disable no-console */
+import { useUser } from '@supabase/auth-helpers-react';
 import { useEffect, useState } from 'react';
 
 import type { Mood } from '@/types/moodTypes';
 
-export const useMoods = () => {
+interface MoodsData {
+  moods: Mood[];
+  fetchMoods: (userId: string) => Promise<void>;
+  deleteMood: (id: number) => Promise<void>;
+  modifyMood: (id: number, mood: Mood) => Promise<void>;
+}
+
+export const useMoods = (): MoodsData => {
   const [moods, setMoods] = useState<Mood[]>([]);
-  const [shouldFetch, setShouldFetch] = useState(true);
+  const user = useUser();
+
+  const fetchMoods = async (userId: string) => {
+    // console.log('fetchMoodsFromuseMoods', userId);
+    try {
+      if (userId) {
+        const response = await fetch(`/api/mood/?user_id=${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch moods');
+        }
+        const { data } = await response.json();
+        // console.log('dataArrayforHook', data);
+        setMoods(data);
+      }
+    } catch (error) {
+      console.error(error);
+      setMoods([]);
+    }
+  };
 
   useEffect(() => {
-    const fetchMoods = async () => {
-      try {
-        const response = await fetch('/api/mood');
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const { data: moods } = await response.json();
-        setMoods(moods);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    if (shouldFetch) {
-      fetchMoods();
-      setShouldFetch(false);
+    // console.log('userFromuseMoods', user);
+    if (user && user.id) {
+      fetchMoods(user.id);
     }
-  }, [shouldFetch]);
+  }, [user]);
 
   const deleteMood = async (id: number) => {
     try {
-      const response = await fetch('/api/mood', {
+      const response = await fetch(`/api/mood/?user_id=${user?.id}&id=${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id,
-        }),
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const { data: moods } = await response.json();
-      setMoods(moods);
-      setShouldFetch(true); // fetch the moods again
+      if (!response.ok) {
+        throw new Error('Failed to delete mood');
+      }
+      setMoods((prevMoods) => prevMoods.filter((mood) => mood.id !== id));
     } catch (error) {
       console.error(error);
     }
@@ -48,25 +60,19 @@ export const useMoods = () => {
 
   const modifyMood = async (id: number, mood: Mood) => {
     try {
-      const response = await fetch('/api/mood', {
+      const response = await fetch(`/api/mood?id=${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id,
-          mood,
-        }),
+        body: JSON.stringify(mood),
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const { data: moods } = await response.json();
-      setMoods(moods);
-      setShouldFetch(true); // fetch the moods again
+      const { data } = await response.json();
+      setMoods(data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  return { moods, deleteMood, modifyMood };
+  return { moods, fetchMoods, deleteMood, modifyMood };
 };
