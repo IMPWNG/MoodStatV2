@@ -73,10 +73,10 @@ const Table = () => {
     }, 3000);
   };
 
-  const openModal = (mood: Mood | null) => {
-    setOpenMood(mood);
-    setIsOpen(true);
-  };
+  // const openModal = (mood: Mood | null) => {
+  //   setOpenMood(mood);
+  //   setIsOpen(true);
+  // };
 
   const closeModal = () => {
     setIsOpen(false);
@@ -408,14 +408,14 @@ const Table = () => {
               <td>{mood.category}</td>
               <td>{formatDateTime(mood.created_at)}</td>
               <td>
-                <Button
+                {/* <Button
                   sm
                   secondary
                   backgroundColor="btn-yellow mr-2"
                   onClick={() => openModal(mood)}
                 >
                   Edit
-                </Button>
+                </Button> */}
                 <Button
                   sm
                   onClick={() => handleDelete(mood.id)}
