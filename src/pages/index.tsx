@@ -1,6 +1,7 @@
+// Index.tsx
 import { useSession } from '@supabase/auth-helpers-react';
 
-import { useMoods } from '@/hooks/useMoods';
+import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { LoginForm } from '@/template/auth/LoginForm';
@@ -11,18 +12,19 @@ import { AppConfig } from '@/utils/AppConfig';
 
 const Index = () => {
   const session = useSession();
-  const moodsData = useMoods();
+  const moodsData = useMoodsContext();
+
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
       {session ? (
-        <Shell title="Dashboard">
+        <Shell title="Hello">
           <>
             <Section>
               <Stats moods={moodsData.moods} />
             </Section>
             <Section>
-              <Charts />
+              <Charts moods={moodsData.moods} />
             </Section>
           </>
         </Shell>
@@ -33,4 +35,10 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default function IndexPage() {
+  return (
+    <MoodsProvider>
+      <Index />
+    </MoodsProvider>
+  );
+}

@@ -388,12 +388,6 @@ const Table = () => {
             </Link>
           </>
         }
-        pagination={{
-          stats: 'All',
-          current: 1,
-          nbPage: 1,
-          href: '/tables',
-        }}
       >
         {moods &&
           moods.map((mood: Mood) => (

@@ -123,6 +123,7 @@ const Shell = (props: IShellProps) => {
                   <path d="M0 0h24v24H0z" stroke="none" />
                   <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.656 5.656l2.828 2.828M16.172 16.172l2.828 2.828M5.656 16.172l2.828-2.828M16.172 5.656l2.828-2.828" />
                 </svg>
+
                 <span className="text-sm font-medium">Made with</span>
               </div>
               <span className="text-sm font-medium">Next.js + Supabase</span>
@@ -133,11 +134,15 @@ const Shell = (props: IShellProps) => {
       leftContent={
         <>
           {user ? (
-            <Button onClick={handleLogout}>Logout</Button>
+            <>
+              <Button onClick={handleLogout}>Bye 😎</Button>
+            </>
           ) : (
-            <Link href="/login">
-              <Button>Login</Button>
-            </Link>
+            <>
+              <Link href="/login">
+                <Button>Login</Button>
+              </Link>
+            </>
           )}
         </>
       }

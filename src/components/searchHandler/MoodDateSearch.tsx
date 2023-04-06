@@ -1,15 +1,16 @@
+import { useUser } from '@supabase/auth-helpers-react';
 import type { NextComponentType } from 'next';
 import React, { useState } from 'react';
 
-import { useMoods } from '@/hooks/useMoods';
-import styles from '@/styles/MoodSearchByDate.module.css';
+import { useMoodsContext } from '@/context/MoodContext';
+import styles from '@/styles/MoodSearchByDate.module.scss';
 
 const MoodSearchByDate: NextComponentType = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [showInput, setShowInput] = useState(false);
-  const { fetchMoodsByDateRange } = useMoods();
-  const userId = '...'; // Get the user ID
+  const { fetchMoods, fetchMoodsByDateRange } = useMoodsContext();
+  const user = useUser();
 
   const toggleInput = () => {
     setShowInput(!showInput);
@@ -19,10 +20,19 @@ const MoodSearchByDate: NextComponentType = () => {
     setShowInput(false);
   };
 
-  const handleSearchClick = async () => {
-    if (fromDate && toDate) {
-      await fetchMoodsByDateRange(userId, fromDate, toDate);
-      setShowInput(false);
+  const handleDateChange = (from: string, to: string) => {
+    if (user && user.id) {
+      if (from && to) {
+        fetchMoodsByDateRange(user.id, from, to);
+      } else {
+        fetchMoods(user.id);
+      }
+    }
+  };
+
+  const handleSearchAll = () => {
+    if (user && user.id) {
+      fetchMoods(user.id);
     }
   };
 
@@ -53,8 +63,15 @@ const MoodSearchByDate: NextComponentType = () => {
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
         />
-        <button className={styles.button} onClick={handleSearchClick}>
+        <button
+          className={styles.button}
+          onClick={() => handleDateChange(fromDate, toDate)}
+        >
           Search
+        </button>
+
+        <button className={styles.button} onClick={handleSearchAll}>
+          All
         </button>
       </div>
       <div className={styles.iconContainer} onClick={toggleInput}>

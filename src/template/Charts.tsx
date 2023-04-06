@@ -2,11 +2,8 @@ import { Chart1 } from '@/components/charts/Chart1';
 import { Chart2 } from '@/components/charts/Chart2';
 import { Chart3 } from '@/components/charts/Chart3';
 import { Chart4 } from '@/components/charts/Chart4';
-import { useMoods } from '@/hooks/useMoods';
 
-const Charts = () => {
-  const { moods } = useMoods();
-
+const Charts = ({ moods }: any) => {
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-12 lg:col-span-6">

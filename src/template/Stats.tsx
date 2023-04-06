@@ -47,7 +47,7 @@ const Stats = ({ moods }: { moods: Mood[] }) => {
 
   return (
     <>
-      <div className="mb-6 flex flex-col">
+      <div className="mb-4 flex flex-col">
         <MoodSearchByDate />
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">

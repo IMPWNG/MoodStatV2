@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SWRConfig } from 'swr';
 
+import { MoodsProvider } from '@/context/MoodContext';
 // eslint-disable-next-line import/order
 import { fetcher } from '@/utils/fetcher';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -43,9 +44,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <SWRConfig value={{ fetcher }}>
-        <Component {...pageProps} />
-      </SWRConfig>
+      <MoodsProvider>
+        <SWRConfig value={{ fetcher }}>
+          <Component {...pageProps} />
+        </SWRConfig>
+      </MoodsProvider>
     </SessionContextProvider>
   );
 }

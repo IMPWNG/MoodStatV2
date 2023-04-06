@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import type { Mood } from '@/types/moodTypes';
 
-interface MoodsData {
+export interface MoodsData {
   moods: Mood[];
   fetchMoods: (userId: string) => Promise<void>;
   fetchMoodsByDateRange: (

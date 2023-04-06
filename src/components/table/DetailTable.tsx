@@ -1,11 +1,9 @@
 import type { ReactNode } from 'react';
 
-import { Pagination } from '@/components/pagination/Pagination';
-
 type IDetailTableType = {
   head: ReactNode;
   buttons: ReactNode;
-  pagination: {
+  pagination?: {
     stats: string;
     current: number;
     nbPage: number;
@@ -19,7 +17,7 @@ const DetailTable = (props: IDetailTableType) => (
     <div className="flex items-center justify-between">
       <div className="text-lg font-semibold text-gray-800">See your moods</div>
 
-      <div className="flex space-x-2">{props.buttons}</div>
+      {/* <div className="flex space-x-2">{props.buttons}</div> */}
     </div>
 
     {/*
@@ -38,13 +36,13 @@ const DetailTable = (props: IDetailTableType) => (
     </div>
 
     <div className="mt-5 flex flex-col items-center justify-between text-sm sm:flex-row">
-      <div className="mb-2 sm:mb-0">{`Showing ${props.pagination.stats} entries`}</div>
+      {/* <div className="mb-2 sm:mb-0">{`Showing ${props.pagination?.stats} entries`}</div> */}
 
-      <Pagination
-        current={props.pagination.current}
-        nbPage={props.pagination.nbPage}
-        href={props.pagination.href}
-      />
+      {/* <Pagination
+        current={props.pagination?.current ?? 1}
+        nbPage={props.pagination?.nbPage ?? 1}
+        href={props.pagination?.href ?? ''}
+      /> */}
     </div>
 
     <style jsx>
