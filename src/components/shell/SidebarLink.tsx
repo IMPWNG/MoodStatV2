@@ -6,7 +6,7 @@ type ISidebarLinkProps = {
 };
 
 const SidebarLink = (props: ISidebarLinkProps) => (
-  <div className="sidebar-link flex items-center rounded-lg p-2 text-lg font-semibold text-gray-800 hover:bg-primary-200">
+  <div className="sidebar-link flex items-center rounded-lg p-2 text-lg font-semibold text-gray-800 hover:bg-gray-200">
     {props.icon}
 
     {props.children}

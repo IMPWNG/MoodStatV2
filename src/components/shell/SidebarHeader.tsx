@@ -49,7 +49,7 @@ const SidebarHeader = (props: ISidebarHeaderProps) => {
       />
 
       <div className="flex flex-1 flex-col overflow-hidden bg-primary-100">
-        <header className="flex h-16 items-center justify-between bg-white p-3 sm:px-5 lg:px-6">
+        <header className="flex h-16 items-center justify-between bg-gray-100 p-3 sm:px-5 lg:px-6">
           <div className="mr-2 lg:hidden">
             <ToggleMenuButton onClick={handleToggleMenu} />
           </div>

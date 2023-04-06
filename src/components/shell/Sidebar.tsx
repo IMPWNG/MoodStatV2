@@ -15,7 +15,7 @@ const Sidebar = (props: ISidebarProps) => {
     'inset-y-0',
     'left-0',
     'z-50',
-    'bg-white',
+    'bg-gray-100',
     'overflow-y-auto',
     'py-8',
     'px-3',
@@ -27,6 +27,7 @@ const Sidebar = (props: ISidebarProps) => {
     'duration-300',
     'ease-in-out',
     'transform',
+    'shadow-xl',
     {
       'translate-x-0': props.show,
       '-translate-x-full': !props.show,

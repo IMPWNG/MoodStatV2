@@ -1,9 +1,8 @@
 import { useSession } from '@supabase/auth-helpers-react';
-import { Button } from 'flowbite-react';
-import Link from 'next/link';
 
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
+import { LoginForm } from '@/template/auth/LoginForm';
 import { Form1 } from '@/template/Form1';
 import Shell from '@/template/Shell';
 import { AppConfig } from '@/utils/AppConfig';
@@ -21,16 +20,7 @@ const Index = () => {
             </Section>
           </>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center space-y-6 p-6 text-center">
-            <h1 className="text-4xl font-bold text-gray-800">
-              Welcome to Mood Tracker!
-            </h1>
-            <Link href="/login">
-              <Button className="rounded bg-indigo-600 px-4 py-2 font-bold text-white hover:bg-indigo-700">
-                Login
-              </Button>
-            </Link>
-          </div>
+          <LoginForm />
         )}
       </Shell>
     </>

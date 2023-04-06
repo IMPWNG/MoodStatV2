@@ -27,6 +27,7 @@
     "eventsource-parser": "^1.0.0",
     "flowbite": "^1.6.4",
     "flowbite-react": "^0.4.2",
+    "framer-motion": "^10.10.0",
     "jsonwebtoken": "^9.0.0",
     "moment-timezone": "^0.5.42",
     "next": "^13.2.4",
