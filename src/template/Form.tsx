@@ -7,13 +7,13 @@ const PopupAlert = () => {
   return (
     <div className="fixed bottom-0 right-0 m-8">
       <div
-        className="rounded-b border-t-4 border-teal-500 bg-teal-100 px-4 py-3 text-teal-900 shadow-md"
+        className="rounded-lg border-t-4 border-green-500 bg-white px-4 py-3 text-gray-700 shadow-md"
         role="alert"
       >
         <div className="flex">
           <div className="py-1">
             <svg
-              className="mr-4 h-6 w-6 fill-current text-teal-500"
+              className="mr-4 h-6 w-6 fill-current text-green-500"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
             >
@@ -21,7 +21,7 @@ const PopupAlert = () => {
             </svg>
           </div>
           <div>
-            <p className="font-bold">Mood Added!</p>
+            <p className="font-semibold">Mood Added!</p>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@ const Form = () => {
     const description = newDescriptionText.trim();
     const category = categoryText.trim();
 
-    if (description.length === 0 || category.length === 0 || !clicked) {
+    if (description.length < 11 || category.length === 0 || !clicked) {
       return;
     }
 
@@ -128,74 +128,85 @@ const Form = () => {
         Here you can add a thought to your journal.
       </p>
       <form onSubmit={handleAddMood}>
-        <label htmlFor="comment" className="form-label mb-4">
-          Add a thought *
-        </label>
-        <div className="form-comment mt-4">
-          <textarea
-            id="comment"
-            rows={5}
-            value={newDescriptionText}
-            onChange={(e) => setNewDescriptionText(e.target.value)}
-            className="form-input"
-            placeholder="Enter your thought here"
-            required
-          />
+        <div className="form-field">
+          <label htmlFor="comment" className="form-label">
+            Add a thought *
+          </label>
+          <div className="form-comment">
+            <textarea
+              id="comment"
+              rows={5}
+              value={newDescriptionText}
+              onChange={(e) => setNewDescriptionText(e.target.value)}
+              className="form-input"
+              placeholder="Enter your thought here"
+              required
+            />
+          </div>
         </div>
 
-        <label className="form-label">Rate</label>
-        <div className="form-rating my-4">
-          {Array.from({ length: 10 }, (_, index) => {
-            const rating = index + 1;
-            return (
-              <button
-                key={rating}
-                type="button"
-                className={`form-rating-button${
-                  selectedRating && rating <= selectedRating ? ' selected' : ''
-                }`}
-                onClick={() => handleClickedButton(rating)}
-              >
-                {rating}
-              </button>
-            );
-          })}
-        </div>
-
-        <label htmlFor="category" className="form-label mb-4">
-          Category *
-        </label>
-        <div className="form-category mt-4">
-          <input
-            type="text"
-            id="category"
-            value={categoryText}
-            onChange={(e) => setCategoryText(e.target.value)}
-            className="form-input"
-            placeholder="Select a category or create a new one"
-            required
-          />
-          <div className="form-category-buttons items-center justify-center text-center">
-            {getUniqueCategories(categories).map((category, index) => {
+        <div className="form-field">
+          <label className="form-label">Rate</label>
+          <div className="form-rating">
+            {Array.from({ length: 10 }, (_, index) => {
+              const rating = index + 1;
               return (
                 <button
-                  key={index}
+                  key={rating}
                   type="button"
-                  className={`form-category-button${
-                    category === categoryText ? ' selected' : ''
+                  className={`form-rating-button${
+                    selectedRating && rating <= selectedRating
+                      ? ' selected'
+                      : ''
                   }`}
-                  onClick={() => setCategoryText(category)}
+                  onClick={() => handleClickedButton(rating)}
                 >
-                  {category}
+                  {rating}
                 </button>
               );
             })}
           </div>
         </div>
+
+        <div className="form-field">
+          <label htmlFor="category" className="form-label">
+            Category *
+          </label>
+          <div className="form-category">
+            <input
+              type="text"
+              id="category"
+              value={categoryText}
+              onChange={(e) => setCategoryText(e.target.value)}
+              className="form-input"
+              placeholder="Select a category or create a new one"
+              required
+            />
+            <div className="form-category-buttons">
+              {getUniqueCategories(categories).map((category, index) => {
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`form-category-button${
+                      category === categoryText ? ' selected' : ''
+                    }`}
+                    onClick={() => setCategoryText(category)}
+                  >
+                    {category}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
           className="form-submit-button"
-          disabled={!newDescriptionText || !categoryText || !selectedRating}
+          disabled={
+            newDescriptionText.length < 10 || !categoryText || !selectedRating
+          }
         >
           Add
         </button>

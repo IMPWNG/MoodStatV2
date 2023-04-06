@@ -15,8 +15,6 @@ type IDetailTableType = {
 const DetailTable = (props: IDetailTableType) => (
   <div>
     <div className="flex items-center justify-between">
-      <div className="text-lg font-semibold text-gray-800">See your moods</div>
-
       {/* <div className="flex space-x-2">{props.buttons}</div> */}
     </div>
 

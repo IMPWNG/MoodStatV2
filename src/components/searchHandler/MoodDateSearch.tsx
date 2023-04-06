@@ -27,6 +27,7 @@ const MoodSearchByDate: NextComponentType = () => {
       } else {
         fetchMoods(user.id);
       }
+      setShowInput(false);
     }
   };
 
@@ -34,6 +35,7 @@ const MoodSearchByDate: NextComponentType = () => {
     if (user && user.id) {
       fetchMoods(user.id);
     }
+    setShowInput(false);
   };
 
   return (
