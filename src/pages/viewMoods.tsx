@@ -1,4 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import 'react-tabs/style/react-tabs.css';
+
 import { useSession } from '@supabase/auth-helpers-react';
+import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
 import { Meta } from '@/layout/Meta';
@@ -16,11 +20,22 @@ const Index = () => {
       <Meta title={AppConfig.title} description={AppConfig.description} />
       <Shell title="Add">
         {session ? (
-          <>
-            <Section>
-              <Table moods={moodsData.moods} />
-            </Section>
-          </>
+          <Tabs>
+            <TabList>
+              <Tab>View Moods</Tab>
+              <Tab>View Thoughts</Tab>
+            </TabList>
+            <TabPanel>
+              <Section>
+                <Table moods={moodsData.moods} />
+              </Section>
+            </TabPanel>
+            <TabPanel>
+              <Section>
+                <Table moods={moodsData.moods} />
+              </Section>
+            </TabPanel>
+          </Tabs>
         ) : (
           <LoginForm />
         )}
