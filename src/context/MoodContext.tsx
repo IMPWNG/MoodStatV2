@@ -1,4 +1,3 @@
-// MoodsContext.tsx
 import type { NextComponentType, NextPageContext } from 'next';
 import { createContext, useContext } from 'react';
 
