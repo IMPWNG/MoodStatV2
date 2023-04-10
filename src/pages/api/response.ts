@@ -31,11 +31,11 @@ export default async function handler(request: Request) {
         content: message,
       },
     ],
-    temperature: 0.7,
+    temperature: 0.717828233,
     top_p: 1,
     frequency_penalty: 0.5,
     presence_penalty: 0.5,
-    max_tokens: 500,
+    max_tokens: 1000,
     stream: true,
     n: 1,
   };

@@ -32,6 +32,9 @@ const Form1 = () => {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [buttonClicked] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState('transparent');
+  const [userTyped, setUserTyped] = useState<boolean>(false);
+  const [displayOnlyResponse, setDisplayOnlyResponse] =
+    useState<boolean>(false);
 
   const user = useUser();
 
@@ -48,6 +51,26 @@ const Form1 = () => {
     getMoods();
   }, [user, moods]);
 
+  useEffect(() => {
+    const memoryMoods = loadFromMemory('moods');
+    if (memoryMoods) {
+      setMoods(memoryMoods);
+    }
+
+    const memoryResponse = loadFromMemory('response');
+    if (memoryResponse) {
+      setResponse(memoryResponse);
+    }
+  }, []);
+
+  useEffect(() => {
+    saveToMemory('moods', moods);
+  }, [moods]);
+
+  useEffect(() => {
+    saveToMemory('response', response);
+  }, [response]);
+
   const getMoodsCategoryByDate = useCallback(
     (startDate: string, endDate: string) => {
       return moods
@@ -62,23 +85,18 @@ const Form1 = () => {
     [moods]
   );
 
-  const getMoodsDescriptionByDate = useCallback(
-    (startDate: string, endDate: string) => {
-      return moods
-        .filter(
-          (mood) =>
-            mood.created_at >= startDate &&
-            mood.created_at <= `${endDate} 23:59:59`
-        )
-        .map((mood) => mood.description)
-        .join('\n');
-    },
-    [moods]
-  );
+  const getMoodsDescription = useCallback(() => {
+    return moods.map((mood) => mood.description).join('\n');
+  }, [moods]);
+
+  const handleInput = () => {
+    setUserTyped(true);
+  };
 
   const handleButtonClickResume = useCallback(async () => {
     setButtonDisabled(true);
     setButtonColor('red');
+    setDisplayOnlyResponse(true);
 
     const messageInput = document.getElementById(
       'message-input'
@@ -96,24 +114,19 @@ const Form1 = () => {
 
   You're my personal analyst. You're going to help me feel better with myself.
 
-  This is all my tought that I have been feeling : 
-
-  - This are the categories that I have been feeling : ${getMoodsCategoryByDate(
-    startDate,
-    endDate
-  )}
-
-  - This are the description that I have been feeling : ${getMoodsDescriptionByDate(
-    startDate,
-    endDate
-  )}
+  This is all my tought that I have been feeling from ${startDate} to ${endDate}.
+    - This is what I have been feeling : ${getMoodsCategoryByDate(
+      startDate,
+      endDate
+    )}
+}
 `;
     }
     await handleSubmit(new Event('click') as any);
 
     setButtonDisabled(false);
     setButtonColor('');
-  }, [getMoodsCategoryByDate, getMoodsDescriptionByDate]);
+  }, [getMoodsDescription, getMoodsCategoryByDate]);
 
   const handleEnter = (
     e: React.KeyboardEvent<HTMLTextAreaElement> &
@@ -179,8 +192,19 @@ const Form1 = () => {
     return Promise.resolve();
   };
 
+  const saveToMemory = (key: string, value: any) => {
+    localStorage.setItem(key, JSON.stringify(value));
+  };
+
+  const loadFromMemory = (key: string): any => {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  };
+
   const handleReset = () => {
+    localStorage.removeItem('moods');
     localStorage.removeItem('response');
+    setMoods([]);
     setResponse([]);
     setButtonDisabled(false);
     setButtonColor('');
@@ -218,7 +242,16 @@ const Form1 = () => {
           </div>
         </div>
       ) : response ? (
-        response.slice(2).map((item: string, index: number) => {
+        response.map((item: string, index: number) => {
+          // If displayOnlyResponse is true and index is even, skip rendering
+          if (displayOnlyResponse && index % 2 === 0) {
+            return null;
+          }
+
+          // If userTyped is false and index is even, skip rendering
+          if (!userTyped && index % 2 === 0) {
+            return null;
+          }
           return (
             <div key={index} className="flex flex-col">
               <div
@@ -231,7 +264,7 @@ const Form1 = () => {
                   className={`max-w-sm break-words rounded-lg px-4 py-2 text-sm ${
                     index % 2 === 0
                       ? 'bg-blue-500 text-white'
-                      : 'bg-red-100 text-gray-800'
+                      : 'bg-red-400 text-gray-800'
                   }`}
                 >
                   <p className="leading-normal">{item}</p>
@@ -300,6 +333,7 @@ const Form1 = () => {
               rows={2}
               onKeyDown={handleEnter}
               ref={messageInput}
+              onInput={handleInput}
               placeholder='"Resume", "Tips", "Philosophy Vision"'
               className="focus:shadow-outline-blue h-full w-full resize-none rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:placeholder:text-gray-600"
             />

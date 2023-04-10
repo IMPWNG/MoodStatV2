@@ -1,5 +1,6 @@
 import { useSession } from '@supabase/auth-helpers-react';
 
+import { useMoodsContext } from '@/context/MoodContext';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { LoginForm } from '@/template/auth/LoginForm';
@@ -9,6 +10,7 @@ import { AppConfig } from '@/utils/AppConfig';
 
 const Index = () => {
   const session = useSession();
+  const moodsData = useMoodsContext();
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
@@ -16,7 +18,7 @@ const Index = () => {
         {session ? (
           <>
             <Section>
-              <Table />
+              <Table moods={moodsData.moods} />
             </Section>
           </>
         ) : (
