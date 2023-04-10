@@ -15,6 +15,7 @@ export interface MoodsData {
   ) => Promise<void>;
   deleteMood: (id: number) => Promise<void>;
   modifyMood: (id: number, mood: Mood) => Promise<void>;
+  setMoods: React.Dispatch<React.SetStateAction<Mood[]>>;
 }
 
 export const useMoods = (): MoodsData => {
@@ -101,5 +102,12 @@ export const useMoods = (): MoodsData => {
     }
   };
 
-  return { moods, fetchMoods, deleteMood, modifyMood, fetchMoodsByDateRange };
+  return {
+    moods,
+    fetchMoods,
+    deleteMood,
+    modifyMood,
+    fetchMoodsByDateRange,
+    setMoods,
+  };
 };

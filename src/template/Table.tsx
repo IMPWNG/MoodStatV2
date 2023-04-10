@@ -1,9 +1,8 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '@/components/button/Button';
 import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
@@ -15,26 +14,6 @@ const Table = ({ moods }: { moods: Mood[] }) => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const { deleteMood } = useMoods();
-  const [setCategories] = useState<string[]>([]);
-  const [, setCreateCategory] = useState<string[]>([]);
-  const user = useUser();
-
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const response = await fetch(`/api/mood/?user_id=${user?.id}`);
-        const { data } = await response.json();
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const categories = data.map((item: any) => item.category);
-        const uniqueCategories = Array.from(new Set(categories));
-        setCreateCategory(uniqueCategories as string[]);
-      } catch (error: unknown) {
-        console.log('error', error);
-      }
-    }
-    getCategories();
-  }, [user, setCategories, setCreateCategory]);
-
 
   const formatDateTime = (dateTimeString = '') => {
     const date = new Date(dateTimeString);

@@ -1,6 +1,6 @@
 import { useSession } from '@supabase/auth-helpers-react';
 
-import { useMoodsContext } from '@/context/MoodContext';
+import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { LoginForm } from '@/template/auth/LoginForm';
@@ -29,4 +29,10 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default function IndexPage() {
+  return (
+    <MoodsProvider>
+      <Index />
+    </MoodsProvider>
+  );
+}

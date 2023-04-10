@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useUser } from '@supabase/auth-helpers-react';
-import type { NextComponentType } from 'next';
 import React, { useState } from 'react';
 
 import { useMoodsContext } from '@/context/MoodContext';
 import styles from '@/styles/MoodSearchByDate.module.scss';
 
-const MoodSearchByDate: NextComponentType = () => {
+interface DateChangeProps {
+  onDateChange?: (from: string, to: string) => void;
+}
+
+const MoodSearchByDate = ({ onDateChange }: DateChangeProps) => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [showInput, setShowInput] = useState(false);
@@ -29,6 +33,7 @@ const MoodSearchByDate: NextComponentType = () => {
       }
       setShowInput(false);
     }
+    onDateChange && onDateChange(from, to);
   };
 
   const handleSearchAll = () => {

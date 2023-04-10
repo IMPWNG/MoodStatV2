@@ -16,15 +16,14 @@
 import { faHeart, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { faStaffSnake } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useUser } from '@supabase/auth-helpers-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FormElement } from '@/components/form/FormElement';
 import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
+import { useMoods } from '@/hooks/useMoods';
 import type { Mood } from '@/types/moodTypes';
 
-const Form1 = () => {
-  const [moods, setMoods] = useState<Mood[]>([]);
+const AiResponse = ({ moods }: { moods: Mood[] }) => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
   const [response, setResponse] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -32,24 +31,12 @@ const Form1 = () => {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [buttonClicked] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState('transparent');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [userTyped, setUserTyped] = useState<boolean>(false);
+  const { setMoods } = useMoods();
   const [displayOnlyResponse, setDisplayOnlyResponse] =
     useState<boolean>(false);
-
-  const user = useUser();
-
-  useEffect(() => {
-    async function getMoods() {
-      try {
-        const res = await fetch(`/api/mood/?user_id=${user?.id}`);
-        const { data } = await res.json();
-        setMoods(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    getMoods();
-  }, [user, moods]);
 
   useEffect(() => {
     const memoryMoods = loadFromMemory('moods');
@@ -102,23 +89,17 @@ const Form1 = () => {
       'message-input'
     ) as HTMLTextAreaElement;
 
-    const startDateInput = document.getElementById(
-      'startDate'
-    ) as HTMLInputElement;
-    const endDateInput = document.getElementById('endDate') as HTMLInputElement;
-    const startDate = startDateInput?.value;
-    const endDate = endDateInput?.value;
-
     if (messageInput) {
       messageInput.value = `  
 
   You're my personal analyst. You're going to help me feel better with myself.
 
-  This is all my tought that I have been feeling from ${startDate} to ${endDate}.
-    - This is what I have been feeling : ${getMoodsCategoryByDate(
-      startDate,
-      endDate
-    )}
+  I'm going to tell you about my day and you're going to tell me what you think about it.
+
+  From ${startDate} to ${endDate} I felt like this:
+
+  ${getMoodsCategoryByDate(startDate, endDate)}
+
 }
 `;
     }
@@ -126,7 +107,7 @@ const Form1 = () => {
 
     setButtonDisabled(false);
     setButtonColor('');
-  }, [getMoodsDescription, getMoodsCategoryByDate]);
+  }, [getMoodsDescription, startDate, endDate]);
 
   const handleEnter = (
     e: React.KeyboardEvent<HTMLTextAreaElement> &
@@ -201,6 +182,12 @@ const Form1 = () => {
     return data ? JSON.parse(data) : null;
   };
 
+  const handleDateChange = (from: string, to: string) => {
+    console.log(`Date changed from ${from} to ${to}`);
+    setStartDate(from);
+    setEndDate(to);
+  };
+
   const handleReset = () => {
     localStorage.removeItem('moods');
     localStorage.removeItem('response');
@@ -213,7 +200,7 @@ const Form1 = () => {
   return (
     <>
       <div className="mb-4 flex flex-col">
-        <MoodSearchByDate />
+        <MoodSearchByDate onDateChange={handleDateChange} />
       </div>
       {isLoading ? (
         <div className="mt-2 text-center">
@@ -355,4 +342,4 @@ const Form1 = () => {
   );
 };
 
-export { Form1 };
+export { AiResponse };
