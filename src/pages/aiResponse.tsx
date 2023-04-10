@@ -14,17 +14,15 @@ const Index = () => {
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
-      <Shell title="Add">
-        {session ? (
-          <>
-            <Section>
-              <AiResponse moods={moodsData.moods} />
-            </Section>
-          </>
-        ) : (
-          <LoginForm />
-        )}
-      </Shell>
+      {session ? (
+        <Shell title="Add">
+          <Section>
+            <AiResponse moods={moodsData.moods} />
+          </Section>
+        </Shell>
+      ) : (
+        <LoginForm />
+      )}
     </>
   );
 };

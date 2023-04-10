@@ -92,22 +92,25 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     if (messageInput) {
       messageInput.value = `  
 
-  You're my personal analyst. You're going to help me feel better with myself.
+You're my personal analyst. You're going to help me feel better with myself.
 
-  I'm going to tell you about my day and you're going to tell me what you think about it.
+I'm going to tell you about my day and you're going to tell me what you think about it.
 
-  From ${startDate} to ${endDate} I felt like this:
+From ${startDate} to ${endDate} I felt like this:
 
-  ${getMoodsCategoryByDate(startDate, endDate)}
-
+${
+  startDate && endDate
+    ? getMoodsCategoryByDate(startDate, endDate)
+    : getMoodsDescription()
 }
-`;
+
+}`;
     }
     await handleSubmit(new Event('click') as any);
 
     setButtonDisabled(false);
     setButtonColor('');
-  }, [getMoodsDescription, startDate, endDate]);
+  }, [getMoodsDescription, startDate, endDate, getMoodsCategoryByDate]);
 
   const handleEnter = (
     e: React.KeyboardEvent<HTMLTextAreaElement> &

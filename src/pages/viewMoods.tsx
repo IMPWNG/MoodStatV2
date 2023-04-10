@@ -18,8 +18,9 @@ const Index = () => {
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
-      <Shell title="Add">
-        {session ? (
+
+      {session ? (
+        <Shell title="Add">
           <Tabs>
             <TabList>
               <Tab>View Moods</Tab>
@@ -36,10 +37,10 @@ const Index = () => {
               </Section>
             </TabPanel>
           </Tabs>
-        ) : (
-          <LoginForm />
-        )}
-      </Shell>
+        </Shell>
+      ) : (
+        <LoginForm />
+      )}
     </>
   );
 };
