@@ -45,7 +45,7 @@ const Shell = (props: IShellProps) => {
             </SidebarLink>
           </Link>
 
-          <Link href="/forms">
+          <Link href="/addMood">
             <SidebarLink
               icon={
                 <svg
@@ -63,7 +63,7 @@ const Shell = (props: IShellProps) => {
               Add
             </SidebarLink>
           </Link>
-          <Link href="/tables">
+          <Link href="/viewMoods">
             <SidebarLink
               icon={
                 <svg
@@ -83,7 +83,7 @@ const Shell = (props: IShellProps) => {
             </SidebarLink>
           </Link>
 
-          <Link href="/forms1">
+          <Link href="/aiResponse">
             <SidebarLink
               icon={
                 <svg
