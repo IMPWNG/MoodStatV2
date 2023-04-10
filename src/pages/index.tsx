@@ -18,7 +18,7 @@ const Index = () => {
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
       {session ? (
-        <Shell title="Hello nTest">
+        <Shell title="Hello">
           <>
             <Section>
               <Stats moods={moodsData.moods} />
