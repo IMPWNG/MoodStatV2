@@ -23,7 +23,7 @@ const Index = () => {
           <Tabs>
             <TabList>
               <Tab>View Moods</Tab>
-              <Tab>View Thoughts</Tab>
+              <Tab>View Thoughts - In progress</Tab>
             </TabList>
             <TabPanel>
               <Section>
@@ -32,7 +32,7 @@ const Index = () => {
             </TabPanel>
             <TabPanel>
               <Section>
-                <Table moods={moodsData.moods} />
+                <p>This feature is in progress. Please check back later for</p>
               </Section>
             </TabPanel>
           </Tabs>

@@ -21,7 +21,7 @@ const Index = () => {
           <Tabs>
             <TabList>
               <Tab>Add Mood</Tab>
-              <Tab>Add Thought</Tab>
+              <Tab>Add Thought - In progress</Tab>
             </TabList>
             <TabPanel>
               <Section>
@@ -30,7 +30,7 @@ const Index = () => {
             </TabPanel>
             <TabPanel>
               <Section>
-                <Form />
+                <p>This feature is in progress. Please check back later for</p>
               </Section>
             </TabPanel>
           </Tabs>

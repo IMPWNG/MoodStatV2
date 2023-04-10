@@ -321,7 +321,7 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
               onKeyDown={handleEnter}
               ref={messageInput}
               onInput={handleInput}
-              placeholder='"Resume", "Tips", "Philosophy Vision"'
+              placeholder='"Select a date range to view your moods"'
               className="focus:shadow-outline-blue h-full w-full resize-none rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:placeholder:text-gray-600"
             />
           </FormElement>
