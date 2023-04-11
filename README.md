@@ -1,5 +1,21 @@
 ## Mood Stats - V2 
 
+This main concept of this app is to try to help you to figure out your mood and your mental health. 
+
+The principle is simple. You will be able to input your mood on various forms, based on what kind of mood you are feeling.
+After that, the application will be able to predict your mood based on your input, and more importantly, help you to go deeper into your feelings, thanks to the AI model that is used in the application.
+
+
+The application is based on the ChatGPT API. The ChatGPT API is an AI model that will be able to predict your mood based on your input. 
+
+The user will be able to see their progress and will be able to see their mood evolution. 
+
+## why this project ?
+
+On a personal thought, I believe that mental health is a very important topic. I believe that we should all be able to talk about our feelings and our mental health. But the lack of tools, and specialist to help us to do so is a big problem.
+Thanks to AI and the development of the ChatGPT API, we can now have a tool that will be able to help us to talk about our feelings and our mental health. NLP is a very interesting field, and I believe that we will be able to see more and more applications that will be able to help us to talk about our feelings and our mental health.
+
+
 ## Link to the V1
 
 [V1](https://github.com/IMPWNG/MoodStats/edit/main/README.md)
