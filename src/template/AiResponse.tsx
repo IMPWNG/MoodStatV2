@@ -74,14 +74,17 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     [moods]
   );
 
+  // Function to return descriptions of all moods.
   const getMoodsDescription = useCallback(() => {
     return moods.map((mood) => mood.description).join('\n');
   }, [moods]);
 
+  // Function to set the userTyped state when the input is changed.
   const handleInput = () => {
     setUserTyped(true);
   };
 
+  // Function to handle the "Resume" button click, setting up the message input value and invoking handleSubmit.
   const handleButtonClickResume = useCallback(async () => {
     setButtonDisabled(true);
     setButtonColor('red');
@@ -114,6 +117,7 @@ ${
     setButtonColor('');
   }, [getMoodsDescription, startDate, endDate, getMoodsCategoryByDate]);
 
+  // Function to handle the "Enter" key press in the input field, invoking handleSubmit.
   const handleEnter = (
     e: React.KeyboardEvent<HTMLTextAreaElement> &
       React.FormEvent<HTMLFormElement>
@@ -125,17 +129,27 @@ ${
     }
   };
 
+  // Function to handle form submission, send the message to the API, and receive and process the response.
+  // Define an asynchronous function to handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Prevent the default form submission behavior
     e.preventDefault();
+
+    // Get the value of the message input field
     const message = messageInput.current?.value;
+
+    // If the message is not undefined, update the response state and clear the input field
     if (message !== undefined) {
       setResponse((prev) => [...prev, message]);
       messageInput.current!.value = '';
     }
+
+    // If the message is falsy, return early without submitting
     if (!message) {
       return;
     }
 
+    // Send an HTTP POST request to the `/api/response` endpoint with the message payload
     const response = await fetch('/api/response', {
       method: 'POST',
       headers: {
@@ -146,51 +160,75 @@ ${
       }),
     });
 
+    // If the response status is not OK, throw an error
     if (!response.ok) {
       throw new Error(response.statusText);
     }
 
+    // Get the response body as a readable stream
     const data = response.body;
+
+    // If the response body is not present, return early without processing
     if (!data) {
       return;
     }
 
+    // Create a new ReadableStream reader and TextDecoder instance
     const reader = data.getReader();
     const decoder = new TextDecoder();
-    let done = false;
 
+    // Initialize the loop control variable and currentResponse array
+    let done = false;
+    let currentResponse: string[] = [];
+
+    // Update the response state with the user input message
     setResponse((prev) => [...prev, message]);
 
-    let currentResponse: string[] = [];
+    // Loop until the stream is completely read
     while (!done) {
+      // Read a chunk of data from the response body stream
       const { value, done: doneReading } = await reader.read();
+
+      // Update the loop control variable
       done = doneReading;
+
+      // Decode the received chunk of data and add it to the currentResponse array
       const chunkValue = decoder.decode(value);
       currentResponse = [...currentResponse, chunkValue];
+
+      // Update the response state with the concatenated currentResponse array
       setResponse((prev) => [...prev.slice(0, -1), currentResponse.join('')]);
     }
+
+    // Set the loading state to false, indicating the request is complete
     setIsLoading(false);
 
+    // Clear the message input field
     messageInput.current!.value = '';
 
+    // Resolve the returned Promise, indicating the function is complete
     return Promise.resolve();
   };
 
+  // Function to save data to localStorage by key and value.
   const saveToMemory = (key: string, value: any) => {
     localStorage.setItem(key, JSON.stringify(value));
   };
 
+  // Function to load data from localStorage by key and return the value or null.
   const loadFromMemory = (key: string): any => {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   };
 
+  // Function to handle the change of the date range for mood search.
   const handleDateChange = (from: string, to: string) => {
     console.log(`Date changed from ${from} to ${to}`);
     setStartDate(from);
     setEndDate(to);
   };
 
+  // Function to reset the moods and response data, clear localStorage, and update button state.
   const handleReset = () => {
     localStorage.removeItem('moods');
     localStorage.removeItem('response');
