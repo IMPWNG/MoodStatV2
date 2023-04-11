@@ -12,7 +12,6 @@ import type { Mood } from '@/types/moodTypes';
 
 const Table = ({ moods }: { moods: Mood[] }) => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { deleteMood } = useMoods();
 
   const formatDateTime = (dateTimeString = '') => {
@@ -29,45 +28,10 @@ const Table = ({ moods }: { moods: Mood[] }) => {
 
   const handleDelete = async (id: number) => {
     setShowAlert(true);
-    setIsLoading(true);
     await deleteMood(id);
-    setIsLoading(false);
     setTimeout(() => {
-      setIsLoading(false);
       setShowAlert(false);
     }, 3000);
-  };
-
-  // const openModal = (mood: Mood | null) => {
-  //   setOpenMood(mood);
-  //   setIsOpen(true);
-  // };
-
-  const Spinner = () => {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <svg
-          className="-ml-1 mr-3 h-5 w-5 animate-spin text-gray-900"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8z"
-          />
-        </svg>
-      </div>
-    );
   };
 
   const PopupAlert = () => {
@@ -98,7 +62,6 @@ const Table = ({ moods }: { moods: Mood[] }) => {
 
   return (
     <>
-      {isLoading && <Spinner />}
       {showAlert && <PopupAlert />}
       <div className="mb-4 flex flex-col">
       <MoodSearchByDate  />
@@ -149,18 +112,9 @@ const Table = ({ moods }: { moods: Mood[] }) => {
               <td>{mood.category}</td>
               <td>{formatDateTime(mood.created_at)}</td>
               <td>
-                {/* <Button
-                  sm
-                  secondary
-                  backgroundColor="btn-yellow mr-2"
-                  onClick={() => openModal(mood)}
-                >
-                  Edit
-                </Button> */}
                 <Button
                   sm
                   onClick={() => handleDelete(mood.id)}
-                  // change the background color of the button
                   backgroundColor="btn-red"
                 >
                   Delete

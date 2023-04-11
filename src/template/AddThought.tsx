@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-throw-literal */
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
@@ -46,7 +48,7 @@ const Form = () => {
       try {
         const res = await fetch(`/api/mood/?user_id=${user?.id}`);
         const { data } = await res.json();
-        // eslint-disable-next-line @typescript-eslint/no-shadow
+
         const categories = data.map((item: any) => item.category);
         const uniqueCategories = Array.from(new Set(categories));
         setCreateCategory(uniqueCategories as string[]);
@@ -58,7 +60,6 @@ const Form = () => {
     getCategories();
   }, [user, setCategories, setCreateCategory]);
 
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   const getUniqueCategories = (categories: { category: string }[]) => {
     const uniqueCategories: string[] = [];
     categories.forEach((categoryObj) => {
@@ -90,10 +91,8 @@ const Form = () => {
         },
       ]);
 
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       if (error) throw error;
 
-      // Update categories state with the new category
       setCategories((prevCategories) => {
         const updatedCategories = [...prevCategories, { category }];
         const uniqueCategories = getUniqueCategories(updatedCategories);

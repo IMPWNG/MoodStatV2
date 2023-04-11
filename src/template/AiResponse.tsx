@@ -9,10 +9,10 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-nested-ternary */
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 
 'use client';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { faHeart, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { faStaffSnake } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,9 +27,7 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
   const [response, setResponse] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [currentModel] = useState<string>('gpt-3.5-turbo');
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
-  const [buttonClicked] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState('transparent');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -38,6 +36,7 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
   const [displayOnlyResponse, setDisplayOnlyResponse] =
     useState<boolean>(false);
 
+  // useEffect to load moods and response from localStorage, if available.
   useEffect(() => {
     const memoryMoods = loadFromMemory('moods');
     if (memoryMoods) {
@@ -50,14 +49,17 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     }
   }, []);
 
+  // useEffect to save the updated moods to localStorage.
   useEffect(() => {
     saveToMemory('moods', moods);
   }, [moods]);
 
+  // useEffect to save the updated response to localStorage.
   useEffect(() => {
     saveToMemory('response', response);
   }, [response]);
 
+  // Function to filter moods by date range and return their categories.
   const getMoodsCategoryByDate = useCallback(
     (startDate: string, endDate: string) => {
       return moods
@@ -141,7 +143,6 @@ ${
       },
       body: JSON.stringify({
         message,
-        currentModel,
       }),
     });
 
@@ -170,7 +171,6 @@ ${
     }
     setIsLoading(false);
 
-    // Clear input field
     messageInput.current!.value = '';
 
     return Promise.resolve();
@@ -233,12 +233,9 @@ ${
         </div>
       ) : response ? (
         response.map((item: string, index: number) => {
-          // If displayOnlyResponse is true and index is even, skip rendering
           if (displayOnlyResponse && index % 2 === 0) {
             return null;
           }
-
-          // If userTyped is false and index is even, skip rendering
           if (!userTyped && index % 2 === 0) {
             return null;
           }
@@ -292,7 +289,7 @@ ${
                 }
               }}
               title="View Resume"
-              disabled={buttonDisabled || buttonClicked}
+              disabled={buttonDisabled}
               style={{ backgroundColor: buttonColor }}
             >
               <FontAwesomeIcon

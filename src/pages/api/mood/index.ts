@@ -19,9 +19,6 @@ export default async function Handler(
         const userId = req.query.user_id?.toString();
         const fromDate = req.query.from?.toString();
         const toDate = req.query.to?.toString();
-        // console.log('Get userId:', userId);
-        // console.log('userId in API route:', userId);
-        // console.log('Request parameters in API route:', req.query);
 
         if (!userId || !UUID_REGEX.test(userId)) {
           throw new Error('No user_id provided');
@@ -30,12 +27,6 @@ export default async function Handler(
           .from('stats_mood')
           .select('*')
           .eq('user_id', userId);
-        // console.log(
-        //   'Supabase query:',
-        //   supabase.from('stats_mood').select('*').eq('user_id', userId)
-        // );
-        // console.log('Supabase query result:', { data, error });
-        // console.log('Database query response:', { data, error });
         if (fromDate && toDate) {
           const filteredData = data?.filter(
             (mood) =>

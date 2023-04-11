@@ -25,4 +25,7 @@ For the V2, I have changed the style of the application. I opted for a more mini
 - Add more type of entries to gameify the application.
 - Perform more tests on the AI model.
 
+# Documentation
 
+- All the documentation is available in the [docs](
+  
