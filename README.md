@@ -27,5 +27,5 @@ For the V2, I have changed the style of the application. I opted for a more mini
 
 # Documentation
 
-- All the documentation is available in the [docs](
-  
+- All the documentation is available in the [docs](https://github.com/IMPWNG/MoodStatV2/tree/main/docs)
+
