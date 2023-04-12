@@ -7,6 +7,7 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { Form } from '@/template/AddMood';
+import { Form1 } from '@/template/AddThought';
 import { LoginForm } from '@/template/auth/LoginForm';
 import Shell from '@/template/Shell';
 import { AppConfig } from '@/utils/AppConfig';
@@ -21,7 +22,7 @@ const Index = () => {
           <Tabs>
             <TabList>
               <Tab>Add Mood</Tab>
-              <Tab>Add Thought - In progress</Tab>
+              <Tab>Who are you?</Tab>
             </TabList>
             <TabPanel>
               <Section>
@@ -30,7 +31,7 @@ const Index = () => {
             </TabPanel>
             <TabPanel>
               <Section>
-                <p>This feature is in progress. Please check back later for</p>
+                <Form1 />
               </Section>
             </TabPanel>
           </Tabs>

@@ -1,9 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-throw-literal */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const PopupAlert = () => {
   return (
@@ -23,7 +24,7 @@ const PopupAlert = () => {
             </svg>
           </div>
           <div>
-            <p className="font-semibold">Mood Added!</p>
+            <p className="font-semibold">Thoughts Added!</p>
           </div>
         </div>
       </div>
@@ -31,80 +32,65 @@ const PopupAlert = () => {
   );
 };
 
-const Form = () => {
-  const [newDescriptionText, setNewDescriptionText] = useState<string>('');
-  const [clicked, setClicked] = useState<number | null>(null);
-  const [categoryText, setCategoryText] = useState<string>('');
+const Form1 = () => {
+  const [age, setAge] = useState<number | null>(null);
+  const [gender, setGender] = useState<string>('');
+  const [negativeThoughtsFrequency, setNegativeThoughtsFrequency] =
+    useState<string>('');
+  const [emotionManagementDifficulty, setEmotionManagementDifficulty] =
+    useState<boolean>(false);
+  const [stressFrequency, setStressFrequency] = useState<number | null>(null);
+  const [sleepProblems, setSleepProblems] = useState<boolean>(false);
+  const [lifeChangeExperience, setLifeChangeExperience] = useState<string>('');
+  const [diagnosedWithMentalIllness, setDiagnosedWithMentalIllness] =
+    useState<boolean>(false);
+  const [supportSystemAvailability, setSupportSystemAvailability] =
+    useState<boolean>(false);
+  const [helpfulActivities, setHelpfulActivities] = useState<string>('');
+
   const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [categories, setCategories] = useState<{ category: string }[]>([]);
-  const [, setCreateCategory] = useState<string[]>([]);
+
   const user = useUser();
   const supabase = useSupabaseClient();
 
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const res = await fetch(`/api/mood/?user_id=${user?.id}`);
-        const { data } = await res.json();
-
-        const categories = data.map((item: any) => item.category);
-        const uniqueCategories = Array.from(new Set(categories));
-        setCreateCategory(uniqueCategories as string[]);
-        setCategories(data);
-      } catch (error: unknown) {
-        console.log('error', error);
-      }
-    }
-    getCategories();
-  }, [user, setCategories, setCreateCategory]);
-
-  const getUniqueCategories = (categories: { category: string }[]) => {
-    const uniqueCategories: string[] = [];
-    categories.forEach((categoryObj) => {
-      const { category } = categoryObj;
-      if (!uniqueCategories.includes(category)) {
-        uniqueCategories.push(category);
-      }
-    });
-    return uniqueCategories;
-  };
-
-  const handleAddMood = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddThought = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const description = newDescriptionText.trim();
-    const category = categoryText.trim();
-
-    if (description.length < 11 || category.length === 0 || !clicked) {
+    if (!user) {
       return;
     }
 
     try {
-      const { error } = await supabase.from('stats_mood').insert([
+      const { error } = await supabase.from('stats_thoughts').insert([
         {
-          description,
-          rating: clicked,
           user_id: user?.id,
-          category,
+          age,
+          gender,
+          negativeThoughtsFrequency,
+          emotionManagementDifficulty,
+          stressFrequency,
+          sleepProblems,
+          lifeChangeExperience,
+          diagnosedWithMentalIllness,
+          supportSystemAvailability,
+          helpfulActivities,
         },
       ]);
 
       if (error) throw error;
 
-      setCategories((prevCategories) => {
-        const updatedCategories = [...prevCategories, { category }];
-        const uniqueCategories = getUniqueCategories(updatedCategories);
-        setCreateCategory(uniqueCategories);
-        return updatedCategories;
-      });
-
       setIsAdded(true);
-      setNewDescriptionText('');
-      setCategoryText('');
-      setSelectedRating(null);
-      setClicked(null);
+      setAge(null);
+      setGender('');
+      setNegativeThoughtsFrequency('');
+      setEmotionManagementDifficulty(false);
+      setStressFrequency(null);
+      setSleepProblems(false);
+      setLifeChangeExperience('');
+      setDiagnosedWithMentalIllness(false);
+      setSupportSystemAvailability(false);
+      setHelpfulActivities('');
       setShowAlert(true);
       setTimeout(() => {
         setShowAlert(false);
@@ -114,11 +100,6 @@ const Form = () => {
     }
   };
 
-  const handleClickedButton = (rating: number) => {
-    setClicked(rating);
-    setSelectedRating(rating);
-  };
-
   return (
     <div className="form-container mx-auto w-full rounded-md md:w-auto md:max-w-lg">
       {showAlert && <PopupAlert />}
@@ -126,87 +107,227 @@ const Form = () => {
       <p className="form-subtitle text-center">
         Here you can add a thought to your journal.
       </p>
-      <form onSubmit={handleAddMood}>
+      <form className="form" onSubmit={handleAddThought}>
         <div className="form-field">
           <label htmlFor="comment" className="form-label">
-            Add a thought *
+            How old are you? *
           </label>
           <div className="form-comment">
-            <textarea
-              id="comment"
-              rows={5}
-              value={newDescriptionText}
-              onChange={(e) => setNewDescriptionText(e.target.value)}
+            <input
+              type="number"
+              id="age"
               className="form-input mt-4"
-              placeholder="Enter your thought here"
+              placeholder="Enter your age"
               required
+              onChange={(e) => setAge(Number(e.target.value))}
             />
           </div>
-        </div>
-
-        <div className="form-field">
-          <label className="form-label">Rate *</label>
-          <div className="form-rating mb-5 mt-4 justify-center text-center">
-            {Array.from({ length: 10 }, (_, index) => {
-              const rating = index + 1;
-              return (
-                <button
-                  key={rating}
-                  type="button"
-                  className={`form-rating-button${
-                    selectedRating && rating <= selectedRating
-                      ? ' selected'
-                      : ''
-                  }`}
-                  onClick={() => handleClickedButton(rating)}
-                >
-                  {rating}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="category" className="form-label">
-            Category *
+          <label htmlFor="comment" className="form-label">
+            What's your gender? *
           </label>
-          <div className="form-category">
+          <div className="form-comment">
             <input
               type="text"
-              id="category"
-              value={categoryText}
-              onChange={(e) => setCategoryText(e.target.value)}
+              id="gender"
               className="form-input mt-4"
-              placeholder="Select a category or create a new one"
+              placeholder="I am..."
+              required
+              onChange={(e) => setGender(e.target.value)}
+            />
+          </div>
+          <label htmlFor="comment" className="form-label">
+            How often do you have negative thoughts per day? *
+          </label>
+          <div className="form-comment">
+            <input
+              type="number"
+              id="negativeThoughtsFrequency"
+              className="form-input mt-4"
+              placeholder="I have negative thoughts..."
+              required
+              onChange={(e) => setNegativeThoughtsFrequency(e.target.value)}
+            />
+          </div>
+
+          <label htmlFor="comment" className="form-label">
+            Is it difficul for you to manage your emotions? *
+          </label>
+          <div className="form-comment">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="emotionManagementDifficultyYes"
+                className="form-radio"
+                name="emotionManagementDifficulty"
+                value="Yes"
+                onChange={(_e) => setEmotionManagementDifficulty(true)}
+                required
+              />
+              <label htmlFor="emotionManagementDifficulty" className="ml-2">
+                Yes
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="emotionManagementDifficultyNo"
+                className="form-radio"
+                name="emotionManagementDifficulty"
+                value="No"
+                onChange={(_e) => setEmotionManagementDifficulty(false)}
+                required
+              />
+              <label htmlFor="emotionManagementDifficulty" className="ml-2">
+                No
+              </label>
+            </div>
+          </div>
+
+          <label htmlFor="comment" className="form-label">
+            How often do you feel stressed? *
+          </label>
+          <div className="form-comment">
+            <input
+              type="number"
+              id="stressFrequency"
+              className="form-input mt-4"
+              placeholder="Stress Frequency"
+              onChange={(e) => setStressFrequency(Number(e.target.value))}
               required
             />
-            <div className="form-category-buttons justify-center text-center">
-              {getUniqueCategories(categories).map((category, index) => {
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`form-category-button${
-                      category === categoryText ? ' selected' : ''
-                    }`}
-                    onClick={() => setCategoryText(category)}
-                  >
-                    {category}
-                  </button>
-                );
-              })}
+          </div>
+
+          <label htmlFor="comment" className="form-label">
+            Do you have problems sleeping? *
+          </label>
+          <div className="form-comment">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="sleepProblemsYes"
+                name="sleepProblems"
+                className="form-radio"
+                value="yes"
+                onChange={(_e) => setSleepProblems(true)}
+                required
+              />
+              <label htmlFor="sleepProblemsYes" className="ml-2">
+                Yes
+              </label>
             </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="sleepProblemsNo"
+                name="sleepProblems"
+                className="form-radio"
+                value="no"
+                onChange={(_e) => setSleepProblems(false)}
+                required
+              />
+              <label htmlFor="sleepProblemsNo" className="ml-2">
+                No
+              </label>
+            </div>
+          </div>
+
+          <label htmlFor="comment" className="form-label">
+            Have you experienced a life change recently? *
+          </label>
+          <div className="form-comment">
+            <input
+              type="text"
+              id="lifeChangeExperience"
+              className="form-input mt-4"
+              placeholder="My life has changed..."
+              onChange={(e) => setLifeChangeExperience(e.target.value)}
+              required
+            />
+          </div>
+          <label htmlFor="comment" className="form-label">
+            Did you get diagnosed with a mental illness? *
+          </label>
+          <div className="form-comment">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="diagnosedWithMentalIllnessYes"
+                name="diagnosedWithMentalIllness"
+                className="form-radio"
+                value="yes"
+                onChange={(_e) => setDiagnosedWithMentalIllness(true)}
+                required
+              />
+              <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
+                Yes
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="diagnosedWithMentalIllnessNo"
+                name="diagnosedWithMentalIllness"
+                className="form-radio"
+                value="no"
+                onChange={(_e) => setDiagnosedWithMentalIllness(false)}
+                required
+              />
+              <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
+                No
+              </label>
+            </div>
+          </div>
+
+          <label htmlFor="comment" className="form-label">
+            Do you have a support system? *
+          </label>
+          <div className="form-comment">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="supportSystemAvailabilityYes"
+                name="supportSystemAvailability"
+                className="form-radio"
+                value="yes"
+                onChange={(_e) => setSupportSystemAvailability(true)}
+                required
+              />
+              <label htmlFor="supportSystemAvailability" className="ml-2">
+                Yes
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="supportSystemAvailabilityNo"
+                name="supportSystemAvailability"
+                className="form-radio"
+                value="no"
+                onChange={(_e) => setSupportSystemAvailability(false)}
+                required
+              />
+              <label htmlFor="supportSystemAvailability" className="ml-2">
+                No
+              </label>
+            </div>
+          </div>
+          <label htmlFor="comment" className="form-label">
+            Did you have an helpfull activity today? *
+          </label>
+          <div className="form-comment">
+            <input
+              type="text"
+              id="helpfulActivities"
+              className="form-input mt-4"
+              placeholder="I have negative thoughts..."
+              onChange={(e) => setHelpfulActivities(e.target.value)}
+              required
+            />
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="form-submit-button"
-          disabled={
-            newDescriptionText.length < 10 || !categoryText || !selectedRating
-          }
-        >
+        <button type="submit" className="form-submit-button">
           Add
         </button>
       </form>
@@ -214,4 +335,4 @@ const Form = () => {
   );
 };
 
-export { Form };
+export { Form1 };

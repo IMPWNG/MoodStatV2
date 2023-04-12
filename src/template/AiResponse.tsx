@@ -22,8 +22,15 @@ import { FormElement } from '@/components/form/FormElement';
 import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { useMoods } from '@/hooks/useMoods';
 import type { Mood } from '@/types/moodTypes';
+import type { Thoughts } from '@/types/thoughtsTypes';
 
-const AiResponse = ({ moods }: { moods: Mood[] }) => {
+const AiResponse = ({
+  moods,
+  thoughts,
+}: {
+  moods: Mood[];
+  thoughts: Thoughts[];
+}) => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
   const [response, setResponse] = useState<{ role: string; content: string }[]>(
     []
@@ -37,6 +44,12 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
   const { setMoods } = useMoods();
   const [displayOnlyResponse, setDisplayOnlyResponse] =
     useState<boolean>(false);
+  const [previousReplies, setPreviousReplies] = useState<
+    {
+      reply: string;
+      date: string;
+    }[]
+  >([]);
 
   // useEffect to load moods and response from localStorage, if available.
   useEffect(() => {
@@ -81,6 +94,15 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     return moods.map((mood) => mood.description).join('\n');
   }, [moods]);
 
+  // function to return the age of all thoughts. age is number
+  const getAgeofThoughts = useCallback(() => {
+    return thoughts?.map((thought) => thought.age).join('\n');
+  }, [thoughts]);
+
+  const getGenderofThoughts = useCallback(() => {
+    return thoughts.map((thought) => thought.gender).join('\n');
+  }, [thoughts]);
+
   // Function to set the userTyped state when the input is changed.
   const handleInput = () => {
     setUserTyped(true);
@@ -97,16 +119,18 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     ) as HTMLTextAreaElement;
 
     if (messageInput) {
-      messageInput.value = `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. You are simulating the user speaking to themselves, providing a deep analytical view of their thoughts and feelings based on their moods data from ${startDate} to ${endDate}.
-
-I felt like this from ${startDate} to ${endDate}:
-
-${
-  startDate && endDate
-    ? getMoodsCategoryByDate(startDate, endDate)
-    : getMoodsDescription()
-}
-
+      messageInput.value = `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. 
+      You are simulating a user speaking to himself, providing a deep analytical view of his thoughts and feelings based on
+      several parameters such as : 
+      
+      1. The user's mood data from ${startDate} to ${endDate}.
+      2. The user's age ${getAgeofThoughts()}.
+      3. The user's gender ${getGenderofThoughts()}.
+      4. The user's thoughts ${
+        startDate && endDate
+          ? getMoodsCategoryByDate(startDate, endDate)
+          : getMoodsDescription()
+      }.
 Help me analyze my thoughts and feelings as if I were speaking to myself, providing a deep and insightful understanding.
 
 Rules that you must follow:
@@ -119,13 +143,25 @@ Rules that you must follow:
 7. You must never used the word "bot" or "AI" in your response.
 8. You must never use the word "human" or "person" in your response.
 9. You must never use the term mood data in your response.
+
 `;
+    }
+
+    if (previousReplies.length === 1) {
+      messageInput.value += `\n\nYou previously mentioned: "${previousReplies[0]?.reply}"`;
     }
     await handleSubmit(new Event('click') as any);
 
     setButtonDisabled(false);
     setButtonColor('');
-  }, [getMoodsDescription, startDate, endDate, getMoodsCategoryByDate]);
+  }, [
+    getMoodsDescription,
+    getAgeofThoughts,
+    startDate,
+    endDate,
+    getMoodsCategoryByDate,
+    previousReplies,
+  ]);
 
   // Function to handle the "Enter" key press in the input field, invoking handleSubmit.
   const handleEnter = (
@@ -159,6 +195,11 @@ Rules that you must follow:
       return;
     }
 
+    // Get the user's previous replies and the current date
+    const previousRepliesText = previousReplies
+      .map((prevReply) => `${prevReply.reply} (${prevReply.date})`)
+      .join('\n');
+
     // Send an HTTP POST request to the `/api/response` endpoint with the message payload
     const response = await fetch('/api/response', {
       method: 'POST',
@@ -167,6 +208,7 @@ Rules that you must follow:
       },
       body: JSON.stringify({
         message,
+        previousReplies: previousRepliesText,
       }),
     });
 
@@ -216,6 +258,16 @@ Rules that you must follow:
     // Set the loading state to false, indicating the request is complete
     setIsLoading(false);
 
+    // Store the reply along with the date and time
+    const lastAssistantResponse = currentResponse.join('');
+    setPreviousReplies((prev) => [
+      ...prev,
+      {
+        reply: lastAssistantResponse,
+        date: new Date().toLocaleString(),
+      },
+    ]);
+
     // Clear the message input field
     messageInput.current!.value = '';
 
@@ -256,77 +308,51 @@ Rules that you must follow:
       <div className="mb-4 flex flex-col">
         <MoodSearchByDate onDateChange={handleDateChange} />
       </div>
-      {isLoading ? (
-        <div className="mt-2 text-center">
-          <div className="inline-flex items-center justify-center space-x-2">
-            <svg
-              className="h-5 w-5 animate-spin text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm12 0a8 8 0 100-16 8 8 0 000 16z"
-              ></path>
-            </svg>
-            <span className="text-gray-500">Loading...</span>
-          </div>
-        </div>
-      ) : response ? (
-        response.map((item, index) => {
-          if (displayOnlyResponse && index % 2 === 0) {
-            return null;
-          }
-          if (!userTyped && index % 2 === 0) {
-            return null;
-          }
-          return (
-            <div key={index} className="flex flex-col">
-              <div
-                className={`flex flex-col ${
-                  index % 2 === 0 ? 'items-end' : 'items-start'
-                } mb-1 mt-2`}
-                key={index}
-              >
+      {response
+        ? response.map((item, index) => {
+            if (displayOnlyResponse && index % 2 === 0) {
+              return null;
+            }
+            if (!userTyped && index % 2 === 0) {
+              return null;
+            }
+            return (
+              <div key={index} className="flex flex-col">
                 <div
-                  className={`max-w-sm break-words rounded-lg px-4 py-2 text-sm ${
-                    index % 2 === 0
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-red-400 text-gray-800'
-                  }`}
+                  className={`flex flex-col ${
+                    index % 2 === 0 ? 'items-end' : 'items-start'
+                  } mb-1 mt-2`}
+                  key={index}
                 >
-                  <p className="leading-normal">{item.content}</p>
-                </div>
-              </div>
-              {index === response.length - 2 && (
-                <div
-                  className={`flex ${
-                    index % 2 === 0 ? 'justify-end' : 'justify-start'
-                  }`}
-                >
-                  <span
-                    className={`text-xs ${
-                      index % 2 === 0 ? 'text-gray-400' : 'text-gray-500'
+                  <div
+                    className={`max-w-sm break-words rounded-lg px-4 py-2 text-sm ${
+                      index % 2 === 0
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-red-400 text-gray-800'
                     }`}
                   >
-                    {new Date().toLocaleTimeString()}
-                  </span>
+                    <p className="leading-normal">{item.content}</p>
+                  </div>
                 </div>
-              )}
-            </div>
-          );
-        })
-      ) : null}
+                {index === response.length - 2 && (
+                  <div
+                    className={`flex ${
+                      index % 2 === 0 ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    <span
+                      className={`text-xs ${
+                        index % 2 === 0 ? 'text-gray-400' : 'text-gray-500'
+                      }`}
+                    >
+                      {new Date().toLocaleTimeString()}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        : null}
 
       <div className="fixed inset-x-0 bottom-0 bg-white bg-opacity-40 shadow-md">
         <div className="container mx-auto flex items-center justify-center px-4 py-3">

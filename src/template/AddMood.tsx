@@ -35,11 +35,13 @@ const Form = () => {
   const [newDescriptionText, setNewDescriptionText] = useState<string>('');
   const [clicked, setClicked] = useState<number | null>(null);
   const [categoryText, setCategoryText] = useState<string>('');
-  const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [categories, setCategories] = useState<{ category: string }[]>([]);
+
+  const [, setIsAdded] = useState<boolean>(false);
   const [, setCreateCategory] = useState<string[]>([]);
+
   const user = useUser();
   const supabase = useSupabaseClient();
 
