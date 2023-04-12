@@ -24,7 +24,7 @@ export default async function handler(request: Request) {
       {
         role: 'system',
         content:
-          'You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture.',
+          "You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. You are simulating a deep analytical view of the user's thoughts, as if they were speaking to themselves and exploring their own ideas in depth.",
       },
       {
         role: 'user',
@@ -32,8 +32,8 @@ export default async function handler(request: Request) {
       },
     ],
     temperature: 0.717828233,
-    top_p: 1,
-    frequency_penalty: 0.5,
+    top_p: 0.9,
+    frequency_penalty: 0.6,
     presence_penalty: 0.5,
     max_tokens: 1000,
     stream: true,

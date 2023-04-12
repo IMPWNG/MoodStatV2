@@ -25,7 +25,9 @@ import type { Mood } from '@/types/moodTypes';
 
 const AiResponse = ({ moods }: { moods: Mood[] }) => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
-  const [response, setResponse] = useState<string[]>([]);
+  const [response, setResponse] = useState<{ role: string; content: string }[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState('transparent');
@@ -95,13 +97,9 @@ const AiResponse = ({ moods }: { moods: Mood[] }) => {
     ) as HTMLTextAreaElement;
 
     if (messageInput) {
-      messageInput.value = `  
+      messageInput.value = `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. You are simulating the user speaking to themselves, providing a deep analytical view of their thoughts and feelings based on their moods data from ${startDate} to ${endDate}.
 
-You're my personal analyst. You're going to help me feel better with myself.
-
-I'm going to tell you about my day and you're going to tell me what you think about it.
-
-From ${startDate} to ${endDate} I felt like this:
+I felt like this from ${startDate} to ${endDate}:
 
 ${
   startDate && endDate
@@ -109,7 +107,19 @@ ${
     : getMoodsDescription()
 }
 
-}`;
+Help me analyze my thoughts and feelings as if I were speaking to myself, providing a deep and insightful understanding.
+
+Rules that you must follow:
+
+1. You must respond to the user's input.
+2. You must respond to the user's input in a way that is consistent with the user's moods data.
+3. You must respond to the user's input in a way that is consistent with the user's moods data and the user's input.
+4. You must respond to the user's input in a way that is consistent with the user's moods data, the user's input, and the user's input history.
+6. You need to reply like a human, not a bot.
+7. You must never used the word "bot" or "AI" in your response.
+8. You must never use the word "human" or "person" in your response.
+9. You must never use the term mood data in your response.
+`;
     }
     await handleSubmit(new Event('click') as any);
 
@@ -140,7 +150,7 @@ ${
 
     // If the message is not undefined, update the response state and clear the input field
     if (message !== undefined) {
-      setResponse((prev) => [...prev, message]);
+      setResponse((prev) => [...prev, { role: 'user', content: message }]);
       messageInput.current!.value = '';
     }
 
@@ -182,7 +192,7 @@ ${
     let currentResponse: string[] = [];
 
     // Update the response state with the user input message
-    setResponse((prev) => [...prev, message]);
+    setResponse((prev) => [...prev, { role: 'user', content: message }]);
 
     // Loop until the stream is completely read
     while (!done) {
@@ -197,7 +207,10 @@ ${
       currentResponse = [...currentResponse, chunkValue];
 
       // Update the response state with the concatenated currentResponse array
-      setResponse((prev) => [...prev.slice(0, -1), currentResponse.join('')]);
+      setResponse((prev) => [
+        ...prev.slice(0, -1),
+        { role: 'assistant', content: currentResponse.join('') },
+      ]);
     }
 
     // Set the loading state to false, indicating the request is complete
@@ -270,7 +283,7 @@ ${
           </div>
         </div>
       ) : response ? (
-        response.map((item: string, index: number) => {
+        response.map((item, index) => {
           if (displayOnlyResponse && index % 2 === 0) {
             return null;
           }
@@ -292,7 +305,7 @@ ${
                       : 'bg-red-400 text-gray-800'
                   }`}
                 >
-                  <p className="leading-normal">{item}</p>
+                  <p className="leading-normal">{item.content}</p>
                 </div>
               </div>
               {index === response.length - 2 && (

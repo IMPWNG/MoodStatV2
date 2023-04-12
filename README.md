@@ -45,3 +45,7 @@ For the V2, I have changed the style of the application. I opted for a more mini
 
 - All the documentation is available in the [docs](https://github.com/IMPWNG/MoodStatV2/tree/main/docs)
 
+# Update
+
+- 2023-12-04: Update the prompt of the ChatGPT model. The model is now more accurate on the user input analysis.
+
