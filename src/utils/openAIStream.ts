@@ -1,6 +1,10 @@
+/* eslint-disable no-param-reassign */
 import type { ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createParser } from 'eventsource-parser';
+
+import type { Mood } from '@/types/moodTypes';
+import type { Thoughts } from '@/types/thoughtsTypes';
 
 export type ChatGPTAgent = 'user' | 'system';
 
@@ -19,9 +23,42 @@ export interface OpenAIStreamPayload {
   max_tokens: number;
   stream: boolean;
   n: number;
+  moods?: Mood[];
+  thoughts?: Thoughts[];
+}
+
+function handleMoodsAndThoughts(
+  message: string,
+  moods: Mood[] | undefined,
+  thoughts: Thoughts[] | undefined
+) {
+  if (moods && moods.length > 0) {
+    const moodState = moods.map((mood) => ({
+      role: 'user',
+      content: `User mood category: ${mood.category}. Description: ${mood.description}, Rating: ${mood.rating}, Date of addition: ${mood.created_at}.`,
+    }));
+    message += moodState.map((mood) => mood.content).join(' ');
+  }
+
+  if (thoughts && thoughts.length > 0) {
+    const userPersonality = thoughts.map((thought) => ({
+      role: 'user',
+      content: `User Age: ${thought.age}, gender: ${thought.gender}.`,
+    }));
+    message += userPersonality.map((thought) => thought.content).join(' ');
+  }
+
+  return message;
 }
 
 export async function OpenAIStream(payload: OpenAIStreamPayload) {
+  const { moods, thoughts } = payload;
+  payload.messages[1]!.content = handleMoodsAndThoughts(
+    payload.messages[1]!.content,
+    moods,
+    thoughts
+  );
+
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 

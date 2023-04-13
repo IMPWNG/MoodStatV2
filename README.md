@@ -53,4 +53,4 @@ For the V2, I have changed the style of the application. I opted for a more mini
 
 - [ ] Optmise the application for mobile devices.
 - [ ] When first time using the application, the user need to fill the Who are you form. The output of the form should be saved in the local storage and it will be used as the default value for the user and the AI. 
-
+- [ ] When the user ask something to the AI, the AI should be able to answer based on the user input (thougts and mood table).

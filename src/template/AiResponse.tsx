@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable consistent-return */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-console */
@@ -21,6 +23,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormElement } from '@/components/form/FormElement';
 import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { useMoods } from '@/hooks/useMoods';
+import { useThoughts } from '@/hooks/useUserData';
 import type { Mood } from '@/types/moodTypes';
 import type { Thoughts } from '@/types/thoughtsTypes';
 
@@ -42,6 +45,7 @@ const AiResponse = ({
   const [endDate, setEndDate] = useState<string>('');
   const [userTyped, setUserTyped] = useState<boolean>(false);
   const { setMoods } = useMoods();
+  const { setThoughts } = useThoughts();
   const [displayOnlyResponse, setDisplayOnlyResponse] =
     useState<boolean>(false);
   const [previousReplies, setPreviousReplies] = useState<
@@ -51,30 +55,20 @@ const AiResponse = ({
     }[]
   >([]);
 
-  // useEffect to load moods and response from localStorage, if available.
   useEffect(() => {
-    const memoryMoods = loadFromMemory('moods');
-    if (memoryMoods) {
-      setMoods(memoryMoods);
-    }
+    const data = {
+      moods,
+      thoughts,
+    };
+    localStorage.setItem('data', JSON.stringify(data));
+  }, [moods, thoughts]);
 
-    const memoryResponse = loadFromMemory('response');
-    if (memoryResponse) {
-      setResponse(memoryResponse);
-    }
-  }, []);
+  const handleDateChange = (from: string, to: string) => {
+    console.log(`Date changed from ${from} to ${to}`);
+    setStartDate(from);
+    setEndDate(to);
+  };
 
-  // useEffect to save the updated moods to localStorage.
-  useEffect(() => {
-    saveToMemory('moods', moods);
-  }, [moods]);
-
-  // useEffect to save the updated response to localStorage.
-  useEffect(() => {
-    saveToMemory('response', response);
-  }, [response]);
-
-  // Function to filter moods by date range and return their categories.
   const getMoodsCategoryByDate = useCallback(
     (startDate: string, endDate: string) => {
       return moods
@@ -89,12 +83,10 @@ const AiResponse = ({
     [moods]
   );
 
-  // Function to return descriptions of all moods.
   const getMoodsDescription = useCallback(() => {
     return moods.map((mood) => mood.description).join('\n');
   }, [moods]);
 
-  // function to return the age of all thoughts. age is number
   const getAgeofThoughts = useCallback(() => {
     return thoughts?.map((thought) => thought.age).join('\n');
   }, [thoughts]);
@@ -103,12 +95,98 @@ const AiResponse = ({
     return thoughts.map((thought) => thought.gender).join('\n');
   }, [thoughts]);
 
-  // Function to set the userTyped state when the input is changed.
   const handleInput = () => {
     setUserTyped(true);
   };
 
-  // Function to handle the "Resume" button click, setting up the message input value and invoking handleSubmit.
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const message = messageInput.current?.value;
+
+    if (message !== undefined) {
+      setResponse((prev) => [...prev, { role: 'user', content: message }]);
+      messageInput.current!.value = '';
+    }
+
+    if (!message) {
+      return;
+    }
+
+    const previousRepliesText = previousReplies
+      .map((prevReply) => `${prevReply.reply} (${prevReply.date})`)
+      .join('\n');
+
+    const localData = localStorage.getItem('data');
+    const { moods: localMoods, thoughts: localThoughts } = localData
+      ? JSON.parse(localData)
+      : { moods: [], thoughts: [] };
+
+    const response = await fetch('/api/response', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        previousReplies: previousRepliesText,
+        moods: localMoods,
+        thoughts: localThoughts,
+        age: getAgeofThoughts(),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    const data = response.body;
+
+    if (!data) {
+      return;
+    }
+
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
+
+    let done = false;
+    let currentResponse: string[] = [];
+
+    setResponse((prev) => [...prev, { role: 'user', content: message }]);
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+
+      done = doneReading;
+
+      const chunkValue = decoder.decode(value);
+      currentResponse = [...currentResponse, chunkValue];
+
+      setResponse((prev) => [
+        ...prev.slice(0, -1),
+        {
+          role: 'assistant',
+          content: currentResponse.join(''),
+        },
+      ]);
+    }
+
+    setIsLoading(false);
+
+    const lastAssistantResponse = currentResponse.join('');
+    setPreviousReplies((prev) => [
+      ...prev,
+      {
+        reply: lastAssistantResponse,
+        date: new Date().toLocaleString(),
+      },
+    ]);
+
+    messageInput.current!.value = '';
+
+    return Promise.resolve();
+  };
+
   const handleButtonClickResume = useCallback(async () => {
     setButtonDisabled(true);
     setButtonColor('red');
@@ -175,129 +253,9 @@ Rules that you must follow:
     }
   };
 
-  // Function to handle form submission, send the message to the API, and receive and process the response.
-  // Define an asynchronous function to handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    // Prevent the default form submission behavior
-    e.preventDefault();
-
-    // Get the value of the message input field
-    const message = messageInput.current?.value;
-
-    // If the message is not undefined, update the response state and clear the input field
-    if (message !== undefined) {
-      setResponse((prev) => [...prev, { role: 'user', content: message }]);
-      messageInput.current!.value = '';
-    }
-
-    // If the message is falsy, return early without submitting
-    if (!message) {
-      return;
-    }
-
-    // Get the user's previous replies and the current date
-    const previousRepliesText = previousReplies
-      .map((prevReply) => `${prevReply.reply} (${prevReply.date})`)
-      .join('\n');
-
-    // Send an HTTP POST request to the `/api/response` endpoint with the message payload
-    const response = await fetch('/api/response', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message,
-        previousReplies: previousRepliesText,
-      }),
-    });
-
-    // If the response status is not OK, throw an error
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    // Get the response body as a readable stream
-    const data = response.body;
-
-    // If the response body is not present, return early without processing
-    if (!data) {
-      return;
-    }
-
-    // Create a new ReadableStream reader and TextDecoder instance
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-
-    // Initialize the loop control variable and currentResponse array
-    let done = false;
-    let currentResponse: string[] = [];
-
-    // Update the response state with the user input message
-    setResponse((prev) => [...prev, { role: 'user', content: message }]);
-
-    // Loop until the stream is completely read
-    while (!done) {
-      // Read a chunk of data from the response body stream
-      const { value, done: doneReading } = await reader.read();
-
-      // Update the loop control variable
-      done = doneReading;
-
-      // Decode the received chunk of data and add it to the currentResponse array
-      const chunkValue = decoder.decode(value);
-      currentResponse = [...currentResponse, chunkValue];
-
-      // Update the response state with the concatenated currentResponse array
-      setResponse((prev) => [
-        ...prev.slice(0, -1),
-        { role: 'assistant', content: currentResponse.join('') },
-      ]);
-    }
-
-    // Set the loading state to false, indicating the request is complete
-    setIsLoading(false);
-
-    // Store the reply along with the date and time
-    const lastAssistantResponse = currentResponse.join('');
-    setPreviousReplies((prev) => [
-      ...prev,
-      {
-        reply: lastAssistantResponse,
-        date: new Date().toLocaleString(),
-      },
-    ]);
-
-    // Clear the message input field
-    messageInput.current!.value = '';
-
-    // Resolve the returned Promise, indicating the function is complete
-    return Promise.resolve();
-  };
-
-  // Function to save data to localStorage by key and value.
-  const saveToMemory = (key: string, value: any) => {
-    localStorage.setItem(key, JSON.stringify(value));
-  };
-
-  // Function to load data from localStorage by key and return the value or null.
-  const loadFromMemory = (key: string): any => {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
-  };
-
-  // Function to handle the change of the date range for mood search.
-  const handleDateChange = (from: string, to: string) => {
-    console.log(`Date changed from ${from} to ${to}`);
-    setStartDate(from);
-    setEndDate(to);
-  };
-
-  // Function to reset the moods and response data, clear localStorage, and update button state.
   const handleReset = () => {
-    localStorage.removeItem('moods');
-    localStorage.removeItem('response');
     setMoods([]);
+    setThoughts([]);
     setResponse([]);
     setButtonDisabled(false);
     setButtonColor('');

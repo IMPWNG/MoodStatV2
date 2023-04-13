@@ -9,6 +9,7 @@ import type { Thoughts } from '@/types/thoughtsTypes';
 export interface ThoughtsData {
   thoughts: Thoughts[];
   fetchThoughts: (userId: string) => Promise<void>;
+  setThoughts: React.Dispatch<React.SetStateAction<Thoughts[]>>;
 }
 
 export const useThoughts = (): ThoughtsData => {
@@ -39,5 +40,5 @@ export const useThoughts = (): ThoughtsData => {
     }
   }, [user]);
 
-  return { thoughts, fetchThoughts };
+  return { thoughts, fetchThoughts, setThoughts };
 };
