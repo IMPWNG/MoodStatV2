@@ -44,16 +44,6 @@ export default async function handler(request: Request) {
     content: `User Age: ${thought.age}, gender: ${thought.gender}.`,
   }));
 
-  // Check if the user's message is about their age
-  const askingForAge =
-    message.toLowerCase().includes('my age') ||
-    message.toLowerCase().includes('how old');
-
-  if (askingForAge && thoughts.length > 0) {
-    const ageResponse = `Based on the information provided, your age is ${thoughts[0]?.age}.`;
-    return new Response(ageResponse);
-  }
-
   const payload: OpenAIStreamPayload = {
     model: 'gpt-3.5-turbo',
     messages: [systemMessage, ...moodState, ...userPersonality, userMessage],
