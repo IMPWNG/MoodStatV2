@@ -16,12 +16,14 @@ export const useUsers = (): UsersData => {
   const [usersData, setUsersData] = useState<UsersModel[]>([]);
   const user = useUser();
 
+  console.log('user', user);
+
   const fetchUsers = async (userId: string) => {
     try {
       if (userId) {
-        const response = await fetch(`/api/users/?user_id=${userId}`);
+        const response = await fetch(`/api/userData/?user_id=${userId}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch thoughts');
+          throw new Error('Failed to fetch users');
         }
         const { data } = await response.json();
 

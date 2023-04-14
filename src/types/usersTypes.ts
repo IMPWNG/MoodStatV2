@@ -14,6 +14,7 @@ export type UsersModel = {
   diagnosedWithMentalIllness: boolean;
   supportSystemAvailability: boolean;
   helpfulActivities: string;
+  userImage?: string;
 };
 
 export type EditedMood = Omit<UsersModel, 'created_at' | 'user_id'>;

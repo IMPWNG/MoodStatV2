@@ -4,7 +4,7 @@ import 'react-tabs/style/react-tabs.css';
 import { useSession } from '@supabase/auth-helpers-react';
 
 import { Meta } from '@/layout/Meta';
-import { Form1 } from '@/template/AddThought';
+import { Form1 } from '@/template/AddUser';
 import { LoginForm } from '@/template/auth/LoginForm';
 import { AppConfig } from '@/utils/AppConfig';
 

@@ -1,3 +1,6 @@
+/* eslint-disable func-names */
+/* eslint-disable unused-imports/no-unused-vars */
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-throw-literal */
 /* eslint-disable @typescript-eslint/no-shadow */
@@ -5,6 +8,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState } from 'react';
+
+import Avatar from '@/utils/Avatar';
 
 const PopupAlert = () => {
   return (
@@ -156,7 +161,7 @@ const Form1 = () => {
                 className="form-input mt-4"
                 placeholder="Enter your name"
                 required
-                onChange={(e) => setAge(Number(e.target.value))}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <label htmlFor="comment" className="form-label">
@@ -398,6 +403,11 @@ const Form1 = () => {
                 required
               />
             </div>
+            <Avatar uid={''} url={''} size={0} onUpload={function (): void {
+              throw new Error('Function not implemented.');
+            } }            
+            />
+          
           </div>
 
           <button

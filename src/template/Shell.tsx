@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -15,12 +15,7 @@ type IShellProps = {
 
 const Shell = (props: IShellProps) => {
   const user = useUser();
-  const supabaseClient = useSupabaseClient<any>();
 
-  const handleLogout = async () => {
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) console.log('Error logging out:', error.message);
-  };
   return (
     <SidebarHeader
       title={props.title}
@@ -121,9 +116,7 @@ const Shell = (props: IShellProps) => {
       leftContent={
         <>
           {user ? (
-            <>
-              <Button onClick={handleLogout}>Bye 😎</Button>
-            </>
+            <></>
           ) : (
             <>
               <Link href="/login">

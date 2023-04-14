@@ -1,27 +1,48 @@
-import React, { useState } from 'react';
+/* eslint-disable no-console */
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useUsers } from '@/hooks/useUserData';
 
 const Profile = () => {
   const [showUserCard, setShowUserCard] = useState(false);
   const { usersModel } = useUsers();
-
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const supabaseClient = useSupabaseClient<any>();
   const toggleUserCard = () => {
     setShowUserCard(!showUserCard);
   };
 
+  const handleClickOutside = (event: any) => {
+    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+      setShowUserCard(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) console.log('Error logging out:', error.message);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button
         className="focus:outline-none"
         onClick={toggleUserCard}
         aria-label="User profile"
       >
-        <img src={''} alt="User avatar" className="h-10 w-10 rounded-full" />
+        <img src={''} alt="User avatar" />
       </button>
 
       {showUserCard && (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-lg bg-white p-6 shadow-md">
+        <div className="absolute right-0 z-50 mt-2 w-80 rounded-lg bg-red-100 p-6 shadow-md">
           {usersModel.map((user) => (
             <div key={user.id} className="mb-4 border-b border-gray-200 pb-4">
               <div className="mb-4 flex items-center">
@@ -32,9 +53,8 @@ const Profile = () => {
                 />
                 <div>
                   <h3 className="text-xl font-bold text-gray-800">
-                    {user.name}
+                    Hello {user.name} 👋
                   </h3>
-                  <p className="text-sm text-gray-500">ID: {user.id}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-6">
@@ -89,6 +109,12 @@ const Profile = () => {
               </div>
             </div>
           ))}
+          <button
+            className="w-full rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-600"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </div>
       )}
     </div>

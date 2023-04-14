@@ -6,7 +6,7 @@ import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
 import { useUsers } from '@/hooks/useUserData';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
-import { Form1 } from '@/template/AddThought';
+import { Form1 } from '@/template/AddUser';
 import { LoginForm } from '@/template/auth/LoginForm';
 import { Charts } from '@/template/Charts';
 import Shell from '@/template/Shell';
