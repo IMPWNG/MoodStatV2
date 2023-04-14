@@ -23,16 +23,16 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormElement } from '@/components/form/FormElement';
 import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { useMoods } from '@/hooks/useMoods';
-import { useThoughts } from '@/hooks/useUserData';
+import { useUsers } from '@/hooks/useUserData';
 import type { Mood } from '@/types/moodTypes';
-import type { Thoughts } from '@/types/thoughtsTypes';
+import type { UsersModel } from '@/types/usersTypes';
 
 const AiResponse = ({
   moods,
-  thoughts,
+  usersModels,
 }: {
   moods: Mood[];
-  thoughts: Thoughts[];
+  usersModels: UsersModel[];
 }) => {
   const messageInput = useRef<HTMLTextAreaElement | null>(null);
   const [response, setResponse] = useState<{ role: string; content: string }[]>(
@@ -45,7 +45,7 @@ const AiResponse = ({
   const [endDate, setEndDate] = useState<string>('');
   const [userTyped, setUserTyped] = useState<boolean>(false);
   const { setMoods } = useMoods();
-  const { setThoughts } = useThoughts();
+  const { setUsers } = useUsers();
   const [displayOnlyResponse, setDisplayOnlyResponse] =
     useState<boolean>(false);
   const [previousReplies, setPreviousReplies] = useState<
@@ -58,10 +58,10 @@ const AiResponse = ({
   useEffect(() => {
     const data = {
       moods,
-      thoughts,
+      usersModels,
     };
     localStorage.setItem('data', JSON.stringify(data));
-  }, [moods, thoughts]);
+  }, [moods, usersModels]);
 
   const handleDateChange = (from: string, to: string) => {
     console.log(`Date changed from ${from} to ${to}`);
@@ -87,13 +87,13 @@ const AiResponse = ({
     return moods.map((mood) => mood.description).join('\n');
   }, [moods]);
 
-  const getAgeofThoughts = useCallback(() => {
-    return thoughts?.map((thought) => thought.age).join('\n');
-  }, [thoughts]);
+  const getAgeOfUsers = useCallback(() => {
+    return usersModels.map((user) => user.age).join('\n');
+  }, [usersModels]);
 
-  const getGenderofThoughts = useCallback(() => {
-    return thoughts.map((thought) => thought.gender).join('\n');
-  }, [thoughts]);
+  const getGenderOfUsers = useCallback(() => {
+    return usersModels.map((user) => user.gender).join('\n');
+  }, [usersModels]);
 
   const handleInput = () => {
     setUserTyped(true);
@@ -118,9 +118,9 @@ const AiResponse = ({
       .join('\n');
 
     const localData = localStorage.getItem('data');
-    const { moods: localMoods, thoughts: localThoughts } = localData
+    const { moods: localMoods, usersModels: localUsers } = localData
       ? JSON.parse(localData)
-      : { moods: [], thoughts: [] };
+      : { moods: [], usersModels: [] };
 
     const response = await fetch('/api/response', {
       method: 'POST',
@@ -131,8 +131,8 @@ const AiResponse = ({
         message,
         previousReplies: previousRepliesText,
         moods: localMoods,
-        thoughts: localThoughts,
-        age: getAgeofThoughts(),
+        usersModels: localUsers,
+        age: getAgeOfUsers(),
       }),
     });
 
@@ -202,8 +202,8 @@ const AiResponse = ({
       several parameters such as : 
       
       1. The user's mood data from ${startDate} to ${endDate}.
-      2. The user's age ${getAgeofThoughts()}.
-      3. The user's gender ${getGenderofThoughts()}.
+      2. The user's age ${getAgeOfUsers()}.
+      3. The user's gender ${getGenderOfUsers()}.
       4. The user's thoughts ${
         startDate && endDate
           ? getMoodsCategoryByDate(startDate, endDate)
@@ -234,7 +234,7 @@ Rules that you must follow:
     setButtonColor('');
   }, [
     getMoodsDescription,
-    getAgeofThoughts,
+    getAgeOfUsers,
     startDate,
     endDate,
     getMoodsCategoryByDate,
@@ -255,7 +255,7 @@ Rules that you must follow:
 
   const handleReset = () => {
     setMoods([]);
-    setThoughts([]);
+    setUsers([]);
     setResponse([]);
     setButtonDisabled(false);
     setButtonColor('');

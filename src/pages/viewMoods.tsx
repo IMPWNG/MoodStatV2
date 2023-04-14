@@ -2,7 +2,6 @@
 import 'react-tabs/style/react-tabs.css';
 
 import { useSession } from '@supabase/auth-helpers-react';
-import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 
 import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
 import { Meta } from '@/layout/Meta';
@@ -21,22 +20,9 @@ const Index = () => {
 
       {session ? (
         <Shell title="Add">
-          <Tabs>
-            <TabList>
-              <Tab>View Moods</Tab>
-              <Tab>View Thoughts - In progress</Tab>
-            </TabList>
-            <TabPanel>
-              <Section>
-                <Table moods={moodsData.moods} />
-              </Section>
-            </TabPanel>
-            <TabPanel>
-              <Section>
-                <p>This feature is in progress. Please check back later for</p>
-              </Section>
-            </TabPanel>
-          </Tabs>
+          <Section>
+            <Table moods={moodsData.moods} />
+          </Section>
         </Shell>
       ) : (
         <LoginForm />

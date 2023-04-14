@@ -4,7 +4,7 @@ import type { ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 import { createParser } from 'eventsource-parser';
 
 import type { Mood } from '@/types/moodTypes';
-import type { Thoughts } from '@/types/thoughtsTypes';
+import type { UsersModel } from '@/types/usersTypes';
 
 export type ChatGPTAgent = 'user' | 'system';
 
@@ -24,13 +24,13 @@ export interface OpenAIStreamPayload {
   stream: boolean;
   n: number;
   moods?: Mood[];
-  thoughts?: Thoughts[];
+  usersModels?: UsersModel[];
 }
 
-function handleMoodsAndThoughts(
+function handleMoodsAndUsers(
   message: string,
   moods: Mood[] | undefined,
-  thoughts: Thoughts[] | undefined
+  usersModels: UsersModel[] | undefined
 ) {
   if (moods && moods.length > 0) {
     const moodState = moods.map((mood) => ({
@@ -40,23 +40,25 @@ function handleMoodsAndThoughts(
     message += moodState.map((mood) => mood.content).join(' ');
   }
 
-  if (thoughts && thoughts.length > 0) {
-    const userPersonality = thoughts.map((thought) => ({
+  if (usersModels && usersModels.length > 0) {
+    const userPersonality = usersModels.map((usersModel) => ({
       role: 'user',
-      content: `User Age: ${thought.age}, gender: ${thought.gender}.`,
+      content: `User Age: ${usersModel.age}, gender: ${usersModel.gender}.`,
     }));
-    message += userPersonality.map((thought) => thought.content).join(' ');
+    message += userPersonality
+      .map((usersModel) => usersModel.content)
+      .join(' ');
   }
 
   return message;
 }
 
 export async function OpenAIStream(payload: OpenAIStreamPayload) {
-  const { moods, thoughts } = payload;
-  payload.messages[1]!.content = handleMoodsAndThoughts(
+  const { moods, usersModels } = payload;
+  payload.messages[1]!.content = handleMoodsAndUsers(
     payload.messages[1]!.content,
     moods,
-    thoughts
+    usersModels
   );
 
   const encoder = new TextEncoder();

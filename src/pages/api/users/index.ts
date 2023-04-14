@@ -2,7 +2,7 @@
 import type { PostgrestError } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import type { Thoughts } from '@/types/thoughtsTypes';
+import type { UsersModel } from '@/types/usersTypes';
 import { supabase } from '@/utils/supabase';
 
 const UUID_REGEX =
@@ -10,7 +10,7 @@ const UUID_REGEX =
 
 export default async function Handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ data: Thoughts[]; error?: Error | PostgrestError }>
+  res: NextApiResponse<{ data: UsersModel[]; error?: Error | PostgrestError }>
 ) {
   const { method } = req;
   switch (method) {
@@ -24,18 +24,17 @@ export default async function Handler(
           throw new Error('No user_id provided');
         }
         const { data, error } = await supabase
-          .from('stats_thoughts')
+          .from('users_data')
           .select('*')
           .eq('user_id', userId);
         if (fromDate && toDate) {
           const filteredData = data?.filter(
-            (thoughts) =>
-              new Date(thoughts.created_at).getTime() >=
+            (users) =>
+              new Date(users.created_at).getTime() >=
                 new Date(fromDate).getTime() &&
-              new Date(thoughts.created_at).getTime() <=
-                new Date(toDate).getTime()
+              new Date(users.created_at).getTime() <= new Date(toDate).getTime()
           );
-          res.status(200).json({ data: filteredData as Thoughts[] });
+          res.status(200).json({ data: filteredData as UsersModel[] });
           return;
         }
 
@@ -43,7 +42,7 @@ export default async function Handler(
           throw new Error(error.message);
         }
 
-        res.status(200).json({ data: data as Thoughts[] });
+        res.status(200).json({ data: data as UsersModel[] });
       } catch (error) {
         console.log('GET request error:', error);
         res.status(400).json({ data: [], error: error as Error });

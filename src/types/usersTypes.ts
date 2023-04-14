@@ -1,8 +1,9 @@
 /* eslint-disable unused-imports/no-unused-vars */
-export type Thoughts = {
+export type UsersModel = {
   id: number;
   created_at: string;
   user_id: string;
+  name: string;
   age: number;
   gender: string;
   negativeThoughtsFrequency: number;
@@ -15,4 +16,4 @@ export type Thoughts = {
   helpfulActivities: string;
 };
 
-export type EditedMood = Omit<Thoughts, 'created_at' | 'user_id'>;
+export type EditedMood = Omit<UsersModel, 'created_at' | 'user_id'>;

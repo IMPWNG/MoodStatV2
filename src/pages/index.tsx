@@ -3,7 +3,7 @@
 import { useSession } from '@supabase/auth-helpers-react';
 
 import { MoodsProvider, useMoodsContext } from '@/context/MoodContext';
-import { useThoughts } from '@/hooks/useUserData';
+import { useUsers } from '@/hooks/useUserData';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { Form1 } from '@/template/AddThought';
@@ -16,13 +16,13 @@ import { AppConfig } from '@/utils/AppConfig';
 const Index = () => {
   const session = useSession();
   const moodsData = useMoodsContext();
-  const { thoughts } = useThoughts();
+  const { usersModel } = useUsers();
 
   return (
     <>
       <Meta title={AppConfig.title} description={AppConfig.description} />
       {session ? (
-        thoughts.map((thought) => thought).length > 0 ? (
+        usersModel.map((userModels) => userModels).length > 0 ? (
           <Shell title="Hello">
             <>
               <Section>

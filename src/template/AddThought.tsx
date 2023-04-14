@@ -34,12 +34,13 @@ const PopupAlert = () => {
 
 const Form1 = () => {
   const [age, setAge] = useState<number | null>(null);
+  const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<string>('');
-  const [negativeThoughtsFrequency, setNegativeThoughtsFrequency] =
-    useState<string>('');
+  const [, setNegativeThoughtsFrequency] = useState<number | null>(null);
+
   const [emotionManagementDifficulty, setEmotionManagementDifficulty] =
     useState<boolean>(false);
-  const [stressFrequency, setStressFrequency] = useState<number | null>(null);
+  const [, setStressFrequency] = useState<number | null>(null);
   const [sleepProblems, setSleepProblems] = useState<boolean>(false);
   const [lifeChangeExperience, setLifeChangeExperience] = useState<string>('');
   const [diagnosedWithMentalIllness, setDiagnosedWithMentalIllness] =
@@ -50,6 +51,12 @@ const Form1 = () => {
 
   const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [clickedThoughtsFrequency, setClickedThoughtsFrequency] = useState<
+    number | null
+  >(null);
+  const [clickedStressFrequency, setClickedStressFrequency] = useState<
+    number | null
+  >(null);
 
   const user = useUser();
   const supabase = useSupabaseClient();
@@ -61,7 +68,7 @@ const Form1 = () => {
     if (error) console.log('Error logging out:', error.message);
   };
 
-  const handleAddThought = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) {
@@ -69,14 +76,15 @@ const Form1 = () => {
     }
 
     try {
-      const { error } = await supabase.from('stats_thoughts').insert([
+      const { error } = await supabase.from('users_data').insert([
         {
           user_id: user?.id,
+          name,
           age,
           gender,
-          negativeThoughtsFrequency,
+          negativeThoughtsFrequency: clickedThoughtsFrequency,
           emotionManagementDifficulty,
-          stressFrequency,
+          stressFrequency: clickedStressFrequency,
           sleepProblems,
           lifeChangeExperience,
           diagnosedWithMentalIllness,
@@ -89,10 +97,13 @@ const Form1 = () => {
 
       setIsAdded(true);
       setAge(null);
+      setName('');
       setGender('');
-      setNegativeThoughtsFrequency('');
+      setNegativeThoughtsFrequency(null);
+      setClickedThoughtsFrequency(null);
       setEmotionManagementDifficulty(false);
       setStressFrequency(null);
+      setClickedStressFrequency(null);
       setSleepProblems(false);
       setLifeChangeExperience('');
       setDiagnosedWithMentalIllness(false);
@@ -102,9 +113,20 @@ const Form1 = () => {
       setTimeout(() => {
         setShowAlert(false);
       }, 2000);
+      window.location.href = '/';
     } catch (error: unknown) {
       console.log('error', error);
     }
+  };
+
+  const handleClickedThoughtsFrequency = (
+    negativeThoughtsFrequency: number
+  ) => {
+    setClickedThoughtsFrequency(negativeThoughtsFrequency);
+  };
+
+  const handleClickedStressFrequency = (stressFrequency: number) => {
+    setClickedStressFrequency(stressFrequency);
   };
 
   return (
@@ -116,13 +138,27 @@ const Form1 = () => {
           Hello {user?.user_metadata.full_name} 👋
         </h2>
         <p className="form-subtitle mb-6 text-center text-gray-600">
-          Please fill out the form below to help us understand your thoughts.
+          Please fill out the form below to help us understand who you are 😀
         </p>
+
         <form
           className="form rounded-md bg-white px-8 py-6 shadow-md"
-          onSubmit={handleAddThought}
+          onSubmit={handleAddUser}
         >
           <div className="form-field">
+            <label htmlFor="comment" className="form-label">
+              What's your Name ? *
+            </label>
+            <div className="form-comment">
+              <input
+                type="string"
+                id="name"
+                className="form-input mt-4"
+                placeholder="Enter your name"
+                required
+                onChange={(e) => setAge(Number(e.target.value))}
+              />
+            </div>
             <label htmlFor="comment" className="form-label">
               How old are you? *
             </label>
@@ -150,17 +186,29 @@ const Form1 = () => {
               />
             </div>
             <label htmlFor="comment" className="form-label">
-              How often do you have negative thoughts per day? *
+              On a scale of 1 to 10, how often do you have negative thoughts per
+              day? *
             </label>
-            <div className="form-comment">
-              <input
-                type="number"
-                id="negativeThoughtsFrequency"
-                className="form-input mt-4"
-                placeholder="I have negative thoughts..."
-                required
-                onChange={(e) => setNegativeThoughtsFrequency(e.target.value)}
-              />
+            <div className="form-comment mt-4 justify-center text-center">
+              {Array.from({ length: 10 }, (_, index) => {
+                const negativeThoughtsFrequency = index + 1;
+                return (
+                  <button
+                    key={negativeThoughtsFrequency}
+                    type="button"
+                    className={`form-rating-button${
+                      negativeThoughtsFrequency === clickedThoughtsFrequency
+                        ? ' selected'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      handleClickedThoughtsFrequency(negativeThoughtsFrequency)
+                    }
+                  >
+                    {negativeThoughtsFrequency}
+                  </button>
+                );
+              })}
             </div>
 
             <label htmlFor="comment" className="form-label">
@@ -171,7 +219,7 @@ const Form1 = () => {
                 <input
                   type="radio"
                   id="emotionManagementDifficultyYes"
-                  className="form-radio"
+                  className="form-radio my-4"
                   name="emotionManagementDifficulty"
                   value="Yes"
                   onChange={(_e) => setEmotionManagementDifficulty(true)}
@@ -181,7 +229,7 @@ const Form1 = () => {
                   Yes
                 </label>
               </div>
-              <div className="flex items-center">
+              <div className="mb-4 flex items-center">
                 <input
                   type="radio"
                   id="emotionManagementDifficultyNo"
@@ -198,17 +246,28 @@ const Form1 = () => {
             </div>
 
             <label htmlFor="comment" className="form-label">
-              How often do you feel stressed? *
+              On a scale of 1 to 10, how often do you feel stressed per day? *
             </label>
-            <div className="form-comment">
-              <input
-                type="number"
-                id="stressFrequency"
-                className="form-input mt-4"
-                placeholder="Stress Frequency"
-                onChange={(e) => setStressFrequency(Number(e.target.value))}
-                required
-              />
+            <div className="form-comment mt-4 justify-center text-center">
+              {Array.from({ length: 10 }, (_, index) => {
+                const stressFrequency = index + 1;
+                return (
+                  <button
+                    key={stressFrequency}
+                    type="button"
+                    className={`form-rating-button${
+                      stressFrequency === clickedStressFrequency
+                        ? ' selected'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      handleClickedStressFrequency(stressFrequency)
+                    }
+                  >
+                    {stressFrequency}
+                  </button>
+                );
+              })}
             </div>
 
             <label htmlFor="comment" className="form-label">
@@ -220,7 +279,7 @@ const Form1 = () => {
                   type="radio"
                   id="sleepProblemsYes"
                   name="sleepProblems"
-                  className="form-radio"
+                  className="form-radio my-4"
                   value="yes"
                   onChange={(_e) => setSleepProblems(true)}
                   required
@@ -229,7 +288,7 @@ const Form1 = () => {
                   Yes
                 </label>
               </div>
-              <div className="flex items-center">
+              <div className="mb-4 flex items-center">
                 <input
                   type="radio"
                   id="sleepProblemsNo"
@@ -248,12 +307,12 @@ const Form1 = () => {
             <label htmlFor="comment" className="form-label">
               Have you experienced a life change recently? *
             </label>
-            <div className="form-comment">
+            <div className="form-comment mt-4">
               <input
                 type="text"
                 id="lifeChangeExperience"
-                className="form-input mt-4"
-                placeholder="My life has changed..."
+                className="form-input"
+                placeholder="If yes, what was it?"
                 onChange={(e) => setLifeChangeExperience(e.target.value)}
                 required
               />
@@ -267,7 +326,7 @@ const Form1 = () => {
                   type="radio"
                   id="diagnosedWithMentalIllnessYes"
                   name="diagnosedWithMentalIllness"
-                  className="form-radio"
+                  className="form-radio my-4"
                   value="yes"
                   onChange={(_e) => setDiagnosedWithMentalIllness(true)}
                   required
@@ -276,7 +335,7 @@ const Form1 = () => {
                   Yes
                 </label>
               </div>
-              <div className="flex items-center">
+              <div className="mb-4 flex items-center">
                 <input
                   type="radio"
                   id="diagnosedWithMentalIllnessNo"
@@ -301,7 +360,7 @@ const Form1 = () => {
                   type="radio"
                   id="supportSystemAvailabilityYes"
                   name="supportSystemAvailability"
-                  className="form-radio"
+                  className="form-radio my-4"
                   value="yes"
                   onChange={(_e) => setSupportSystemAvailability(true)}
                   required
@@ -311,7 +370,7 @@ const Form1 = () => {
                 </label>
               </div>
 
-              <div className="flex items-center">
+              <div className="mb-4 flex items-center">
                 <input
                   type="radio"
                   id="supportSystemAvailabilityNo"
@@ -327,14 +386,14 @@ const Form1 = () => {
               </div>
             </div>
             <label htmlFor="comment" className="form-label">
-              Did you have an helpfull activity today? *
+              Did you have an helpfull activity? *
             </label>
             <div className="form-comment">
               <input
                 type="text"
                 id="helpfulActivities"
                 className="form-input mt-4"
-                placeholder="I have negative thoughts..."
+                placeholder="I did..."
                 onChange={(e) => setHelpfulActivities(e.target.value)}
                 required
               />

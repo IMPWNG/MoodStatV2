@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { ToggleMenuButton } from '@/components/button/ToggleMenuButton';
 import { useMenu } from '@/utils/Navigation';
 
+import { Profile } from '../userProfile/Profile';
 import { Sidebar } from './Sidebar';
 
 type ISidebarHeaderProps = {
@@ -57,6 +58,9 @@ const SidebarHeader = (props: ISidebarHeaderProps) => {
           <div className="text-lg font-bold text-gray-900">{props.title}</div>
 
           <div className="ml-auto">{props.leftContent}</div>
+          <div className="ml-2">
+            <Profile />
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden">

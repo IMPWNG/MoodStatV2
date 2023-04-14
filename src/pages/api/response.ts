@@ -1,5 +1,5 @@
 import type { Mood } from '@/types/moodTypes';
-import type { Thoughts } from '@/types/thoughtsTypes';
+import type { UsersModel } from '@/types/usersTypes';
 import type { ChatGPTAgent, OpenAIStreamPayload } from '@/utils/openAIStream';
 import { OpenAIStream } from '@/utils/openAIStream';
 
@@ -7,7 +7,7 @@ type RequestData = {
   currentModel: string;
   message: string;
   moods: Mood[];
-  thoughts: Thoughts[];
+  usersModels: UsersModel[];
 };
 
 if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
@@ -17,7 +17,7 @@ if (!process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
 export const runtime = 'edge';
 
 export default async function handler(request: Request) {
-  const { message, moods, thoughts } = (await request.json()) as RequestData;
+  const { message, moods, usersModels } = (await request.json()) as RequestData;
 
   if (!message) {
     return new Response('No message in the request', { status: 400 });
@@ -39,9 +39,9 @@ export default async function handler(request: Request) {
     content: `User mood category: ${mood.category}. Description: ${mood.description}, Rating: ${mood.rating}, Date of addition: ${mood.created_at}.`,
   }));
 
-  const userPersonality = thoughts.map((thought) => ({
+  const userPersonality = usersModels.map((usersModel) => ({
     role: 'user' as ChatGPTAgent,
-    content: `User Age: ${thought.age}, gender: ${thought.gender}.`,
+    content: `User Age: ${usersModel.age}, gender: ${usersModel.gender}.`,
   }));
 
   const payload: OpenAIStreamPayload = {
