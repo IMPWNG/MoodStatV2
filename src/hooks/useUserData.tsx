@@ -17,7 +17,6 @@ export const useThoughts = (): ThoughtsData => {
   const user = useUser();
 
   const fetchThoughts = async (userId: string) => {
-    console.log('fetchThoughtsFromuseThoughts', userId);
     try {
       if (userId) {
         const response = await fetch(`/api/thoughts/?user_id=${userId}`);
@@ -25,7 +24,7 @@ export const useThoughts = (): ThoughtsData => {
           throw new Error('Failed to fetch thoughts');
         }
         const { data } = await response.json();
-        console.log('dataArrayforHook', data);
+
         setThoughts(data);
       }
     } catch (error) {

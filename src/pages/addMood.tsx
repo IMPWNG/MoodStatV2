@@ -7,7 +7,6 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import { Meta } from '@/layout/Meta';
 import { Section } from '@/layout/Section';
 import { Form } from '@/template/AddMood';
-import { Form1 } from '@/template/AddThought';
 import { LoginForm } from '@/template/auth/LoginForm';
 import Shell from '@/template/Shell';
 import { AppConfig } from '@/utils/AppConfig';
@@ -27,11 +26,6 @@ const Index = () => {
             <TabPanel>
               <Section>
                 <Form />
-              </Section>
-            </TabPanel>
-            <TabPanel>
-              <Section>
-                <Form1 />
               </Section>
             </TabPanel>
           </Tabs>

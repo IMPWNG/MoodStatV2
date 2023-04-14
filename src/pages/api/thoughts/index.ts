@@ -42,9 +42,6 @@ export default async function Handler(
         if (error) {
           throw new Error(error.message);
         }
-        if (!data || data.length === 0) {
-          console.log('No data found for user_id:', req.query.user_id);
-        }
 
         res.status(200).json({ data: data as Thoughts[] });
       } catch (error) {

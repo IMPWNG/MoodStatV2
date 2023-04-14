@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 const PopupAlert = () => {
   return (
-    <div className="fixed inset-x-0 bottom-0 m-8 md:bottom-auto md:right-0 md:m-auto">
+    <div className="fixed inset-x-0 bottom-0 mx-auto md:bottom-auto md:right-0 md:m-8 md:w-auto md:max-w-md">
       <div
         className="mx-auto w-full rounded-lg border-t-4 border-green-500 bg-white px-4 py-3 text-gray-700 shadow-md md:mx-0 md:w-auto"
         role="alert"
@@ -24,7 +24,7 @@ const PopupAlert = () => {
             </svg>
           </div>
           <div>
-            <p className="font-semibold">Thoughts Added!</p>
+            <p className="font-semibold">User Created!</p>
           </div>
         </div>
       </div>
@@ -53,6 +53,13 @@ const Form1 = () => {
 
   const user = useUser();
   const supabase = useSupabaseClient();
+
+  const supabaseClient = useSupabaseClient<any>();
+
+  const handleLogout = async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) console.log('Error logging out:', error.message);
+  };
 
   const handleAddThought = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -101,236 +108,253 @@ const Form1 = () => {
   };
 
   return (
-    <div className="form-container mx-auto w-full rounded-md md:w-auto md:max-w-lg">
-      {showAlert && <PopupAlert />}
-      <h2 className="form-title text-center">Add a Thought</h2>
-      <p className="form-subtitle text-center">
-        Here you can add a thought to your journal.
-      </p>
-      <form className="form" onSubmit={handleAddThought}>
-        <div className="form-field">
-          <label htmlFor="comment" className="form-label">
-            How old are you? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="number"
-              id="age"
-              className="form-input mt-4"
-              placeholder="Enter your age"
-              required
-              onChange={(e) => setAge(Number(e.target.value))}
-            />
-          </div>
-          <label htmlFor="comment" className="form-label">
-            What's your gender? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="text"
-              id="gender"
-              className="form-input mt-4"
-              placeholder="I am..."
-              required
-              onChange={(e) => setGender(e.target.value)}
-            />
-          </div>
-          <label htmlFor="comment" className="form-label">
-            How often do you have negative thoughts per day? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="number"
-              id="negativeThoughtsFrequency"
-              className="form-input mt-4"
-              placeholder="I have negative thoughts..."
-              required
-              onChange={(e) => setNegativeThoughtsFrequency(e.target.value)}
-            />
-          </div>
-
-          <label htmlFor="comment" className="form-label">
-            Is it difficul for you to manage your emotions? *
-          </label>
-          <div className="form-comment">
-            <div className="flex items-center">
+    <div className="form-container flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="mx-auto w-full items-center justify-center rounded-md md:w-auto md:max-w-lg md:rounded-lg">
+        {showAlert && <PopupAlert />}
+        {showAlert && <PopupAlert />}
+        <h2 className="form-title mt-8 text-center text-gray-800">
+          Hello {user?.user_metadata.full_name} 👋
+        </h2>
+        <p className="form-subtitle mb-6 text-center text-gray-600">
+          Please fill out the form below to help us understand your thoughts.
+        </p>
+        <form
+          className="form rounded-md bg-white px-8 py-6 shadow-md"
+          onSubmit={handleAddThought}
+        >
+          <div className="form-field">
+            <label htmlFor="comment" className="form-label">
+              How old are you? *
+            </label>
+            <div className="form-comment">
               <input
-                type="radio"
-                id="emotionManagementDifficultyYes"
-                className="form-radio"
-                name="emotionManagementDifficulty"
-                value="Yes"
-                onChange={(_e) => setEmotionManagementDifficulty(true)}
+                type="number"
+                id="age"
+                className="form-input mt-4"
+                placeholder="Enter your age"
                 required
+                onChange={(e) => setAge(Number(e.target.value))}
               />
-              <label htmlFor="emotionManagementDifficulty" className="ml-2">
-                Yes
-              </label>
             </div>
-            <div className="flex items-center">
+            <label htmlFor="comment" className="form-label">
+              What's your gender? *
+            </label>
+            <div className="form-comment">
               <input
-                type="radio"
-                id="emotionManagementDifficultyNo"
-                className="form-radio"
-                name="emotionManagementDifficulty"
-                value="No"
-                onChange={(_e) => setEmotionManagementDifficulty(false)}
+                type="text"
+                id="gender"
+                className="form-input mt-4"
+                placeholder="I am..."
                 required
+                onChange={(e) => setGender(e.target.value)}
               />
-              <label htmlFor="emotionManagementDifficulty" className="ml-2">
-                No
-              </label>
             </div>
-          </div>
-
-          <label htmlFor="comment" className="form-label">
-            How often do you feel stressed? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="number"
-              id="stressFrequency"
-              className="form-input mt-4"
-              placeholder="Stress Frequency"
-              onChange={(e) => setStressFrequency(Number(e.target.value))}
-              required
-            />
-          </div>
-
-          <label htmlFor="comment" className="form-label">
-            Do you have problems sleeping? *
-          </label>
-          <div className="form-comment">
-            <div className="flex items-center">
+            <label htmlFor="comment" className="form-label">
+              How often do you have negative thoughts per day? *
+            </label>
+            <div className="form-comment">
               <input
-                type="radio"
-                id="sleepProblemsYes"
-                name="sleepProblems"
-                className="form-radio"
-                value="yes"
-                onChange={(_e) => setSleepProblems(true)}
+                type="number"
+                id="negativeThoughtsFrequency"
+                className="form-input mt-4"
+                placeholder="I have negative thoughts..."
                 required
+                onChange={(e) => setNegativeThoughtsFrequency(e.target.value)}
               />
-              <label htmlFor="sleepProblemsYes" className="ml-2">
-                Yes
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="sleepProblemsNo"
-                name="sleepProblems"
-                className="form-radio"
-                value="no"
-                onChange={(_e) => setSleepProblems(false)}
-                required
-              />
-              <label htmlFor="sleepProblemsNo" className="ml-2">
-                No
-              </label>
-            </div>
-          </div>
-
-          <label htmlFor="comment" className="form-label">
-            Have you experienced a life change recently? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="text"
-              id="lifeChangeExperience"
-              className="form-input mt-4"
-              placeholder="My life has changed..."
-              onChange={(e) => setLifeChangeExperience(e.target.value)}
-              required
-            />
-          </div>
-          <label htmlFor="comment" className="form-label">
-            Did you get diagnosed with a mental illness? *
-          </label>
-          <div className="form-comment">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="diagnosedWithMentalIllnessYes"
-                name="diagnosedWithMentalIllness"
-                className="form-radio"
-                value="yes"
-                onChange={(_e) => setDiagnosedWithMentalIllness(true)}
-                required
-              />
-              <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
-                Yes
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="diagnosedWithMentalIllnessNo"
-                name="diagnosedWithMentalIllness"
-                className="form-radio"
-                value="no"
-                onChange={(_e) => setDiagnosedWithMentalIllness(false)}
-                required
-              />
-              <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
-                No
-              </label>
-            </div>
-          </div>
-
-          <label htmlFor="comment" className="form-label">
-            Do you have a support system? *
-          </label>
-          <div className="form-comment">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="supportSystemAvailabilityYes"
-                name="supportSystemAvailability"
-                className="form-radio"
-                value="yes"
-                onChange={(_e) => setSupportSystemAvailability(true)}
-                required
-              />
-              <label htmlFor="supportSystemAvailability" className="ml-2">
-                Yes
-              </label>
             </div>
 
-            <div className="flex items-center">
+            <label htmlFor="comment" className="form-label">
+              Is it difficul for you to manage your emotions? *
+            </label>
+            <div className="form-comment">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="emotionManagementDifficultyYes"
+                  className="form-radio"
+                  name="emotionManagementDifficulty"
+                  value="Yes"
+                  onChange={(_e) => setEmotionManagementDifficulty(true)}
+                  required
+                />
+                <label htmlFor="emotionManagementDifficulty" className="ml-2">
+                  Yes
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="emotionManagementDifficultyNo"
+                  className="form-radio"
+                  name="emotionManagementDifficulty"
+                  value="No"
+                  onChange={(_e) => setEmotionManagementDifficulty(false)}
+                  required
+                />
+                <label htmlFor="emotionManagementDifficulty" className="ml-2">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <label htmlFor="comment" className="form-label">
+              How often do you feel stressed? *
+            </label>
+            <div className="form-comment">
               <input
-                type="radio"
-                id="supportSystemAvailabilityNo"
-                name="supportSystemAvailability"
-                className="form-radio"
-                value="no"
-                onChange={(_e) => setSupportSystemAvailability(false)}
+                type="number"
+                id="stressFrequency"
+                className="form-input mt-4"
+                placeholder="Stress Frequency"
+                onChange={(e) => setStressFrequency(Number(e.target.value))}
                 required
               />
-              <label htmlFor="supportSystemAvailability" className="ml-2">
-                No
-              </label>
+            </div>
+
+            <label htmlFor="comment" className="form-label">
+              Do you have problems sleeping? *
+            </label>
+            <div className="form-comment">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="sleepProblemsYes"
+                  name="sleepProblems"
+                  className="form-radio"
+                  value="yes"
+                  onChange={(_e) => setSleepProblems(true)}
+                  required
+                />
+                <label htmlFor="sleepProblemsYes" className="ml-2">
+                  Yes
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="sleepProblemsNo"
+                  name="sleepProblems"
+                  className="form-radio"
+                  value="no"
+                  onChange={(_e) => setSleepProblems(false)}
+                  required
+                />
+                <label htmlFor="sleepProblemsNo" className="ml-2">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <label htmlFor="comment" className="form-label">
+              Have you experienced a life change recently? *
+            </label>
+            <div className="form-comment">
+              <input
+                type="text"
+                id="lifeChangeExperience"
+                className="form-input mt-4"
+                placeholder="My life has changed..."
+                onChange={(e) => setLifeChangeExperience(e.target.value)}
+                required
+              />
+            </div>
+            <label htmlFor="comment" className="form-label">
+              Did you get diagnosed with a mental illness? *
+            </label>
+            <div className="form-comment">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="diagnosedWithMentalIllnessYes"
+                  name="diagnosedWithMentalIllness"
+                  className="form-radio"
+                  value="yes"
+                  onChange={(_e) => setDiagnosedWithMentalIllness(true)}
+                  required
+                />
+                <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
+                  Yes
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="diagnosedWithMentalIllnessNo"
+                  name="diagnosedWithMentalIllness"
+                  className="form-radio"
+                  value="no"
+                  onChange={(_e) => setDiagnosedWithMentalIllness(false)}
+                  required
+                />
+                <label htmlFor="diagnosedWithMentalIllness" className="ml-2">
+                  No
+                </label>
+              </div>
+            </div>
+
+            <label htmlFor="comment" className="form-label">
+              Do you have a support system? *
+            </label>
+            <div className="form-comment">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="supportSystemAvailabilityYes"
+                  name="supportSystemAvailability"
+                  className="form-radio"
+                  value="yes"
+                  onChange={(_e) => setSupportSystemAvailability(true)}
+                  required
+                />
+                <label htmlFor="supportSystemAvailability" className="ml-2">
+                  Yes
+                </label>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="supportSystemAvailabilityNo"
+                  name="supportSystemAvailability"
+                  className="form-radio"
+                  value="no"
+                  onChange={(_e) => setSupportSystemAvailability(false)}
+                  required
+                />
+                <label htmlFor="supportSystemAvailability" className="ml-2">
+                  No
+                </label>
+              </div>
+            </div>
+            <label htmlFor="comment" className="form-label">
+              Did you have an helpfull activity today? *
+            </label>
+            <div className="form-comment">
+              <input
+                type="text"
+                id="helpfulActivities"
+                className="form-input mt-4"
+                placeholder="I have negative thoughts..."
+                onChange={(e) => setHelpfulActivities(e.target.value)}
+                required
+              />
             </div>
           </div>
-          <label htmlFor="comment" className="form-label">
-            Did you have an helpfull activity today? *
-          </label>
-          <div className="form-comment">
-            <input
-              type="text"
-              id="helpfulActivities"
-              className="form-input mt-4"
-              placeholder="I have negative thoughts..."
-              onChange={(e) => setHelpfulActivities(e.target.value)}
-              required
-            />
-          </div>
-        </div>
 
-        <button type="submit" className="form-submit-button">
-          Add
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="form-submit-button mt-6 w-full rounded-md bg-blue-500 py-2 font-semibold text-white hover:bg-blue-600"
+          >
+            Add
+          </button>
+          <button
+            className="form-submit-button mt-6 w-full rounded-md bg-red-500 py-2 font-semibold text-white hover:bg-red-600"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
