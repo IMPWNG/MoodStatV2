@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 /* eslint-disable no-alert */
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React, { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ export default function Avatar({
   onUpload,
 }: {
   uid: string;
-  url: string;
+  url?: string;
   size: number;
   onUpload: (url: string) => void;
 }) {

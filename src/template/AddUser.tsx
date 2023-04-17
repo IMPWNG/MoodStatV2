@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable func-names */
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable prettier/prettier */
@@ -9,7 +10,7 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState } from 'react';
 
-import Avatar from '@/utils/Avatar';
+
 
 const PopupAlert = () => {
   return (
@@ -54,6 +55,7 @@ const Form1 = () => {
     useState<boolean>(false);
   const [helpfulActivities, setHelpfulActivities] = useState<string>('');
 
+
   const [, setIsAdded] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [clickedThoughtsFrequency, setClickedThoughtsFrequency] = useState<
@@ -67,6 +69,9 @@ const Form1 = () => {
   const supabase = useSupabaseClient();
 
   const supabaseClient = useSupabaseClient<any>();
+
+
+
 
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut();
@@ -95,6 +100,7 @@ const Form1 = () => {
           diagnosedWithMentalIllness,
           supportSystemAvailability,
           helpfulActivities,
+
         },
       ]);
 
@@ -104,6 +110,7 @@ const Form1 = () => {
       setAge(null);
       setName('');
       setGender('');
+
       setNegativeThoughtsFrequency(null);
       setClickedThoughtsFrequency(null);
       setEmotionManagementDifficulty(false);
@@ -134,6 +141,7 @@ const Form1 = () => {
     setClickedStressFrequency(stressFrequency);
   };
 
+
   return (
     <div className="form-container flex min-h-screen items-center justify-center bg-gray-50">
       <div className="mx-auto w-full items-center justify-center rounded-md md:w-auto md:max-w-lg md:rounded-lg">
@@ -141,13 +149,10 @@ const Form1 = () => {
         {showAlert && <PopupAlert />}
         <h2 className="form-title mt-8 text-center text-gray-800">
           Hello {user?.user_metadata.full_name} 👋
-        </h2>
-        <p className="form-subtitle mb-6 text-center text-gray-600">
-          Please fill out the form below to help us understand who you are 😀
-        </p>
-
+             </h2>
+        <p className="form-subtitle mb-6 text-center text-gray-600"> Welcome on Thought Explorer! Fill out the form below, so we can get to know you better 😄 </p>
         <form
-          className="form rounded-md bg-white px-8 py-6 shadow-md"
+          className="form px-8 py-6"
           onSubmit={handleAddUser}
         >
           <div className="form-field">
@@ -403,11 +408,7 @@ const Form1 = () => {
                 required
               />
             </div>
-            <Avatar uid={''} url={''} size={0} onUpload={function (): void {
-              throw new Error('Function not implemented.');
-            } }            
-            />
-          
+           
           </div>
 
           <button

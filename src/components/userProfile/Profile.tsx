@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useUsers } from '@/hooks/useUserData';
@@ -31,6 +31,8 @@ const Profile = () => {
     };
   }, []);
 
+  const users = useUser();
+
   return (
     <div className="relative" ref={wrapperRef}>
       <button
@@ -38,7 +40,11 @@ const Profile = () => {
         onClick={toggleUserCard}
         aria-label="User profile"
       >
-        <img src={''} alt="User avatar" />
+        <img
+          src={users?.user_metadata.avatar_url}
+          alt="User avatar"
+          className="h-10 w-10 rounded-full"
+        />
       </button>
 
       {showUserCard && (
@@ -47,7 +53,7 @@ const Profile = () => {
             <div key={user.id} className="mb-4 border-b border-gray-200 pb-4">
               <div className="mb-4 flex items-center">
                 <img
-                  src={''}
+                  src={users?.user_metadata.avatar_url}
                   alt="User avatar"
                   className="mr-4 h-16 w-16 rounded-full"
                 />

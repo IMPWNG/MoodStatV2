@@ -8,17 +8,18 @@ import type { UsersModel } from '@/types/usersTypes';
 
 export interface UsersData {
   usersModel: UsersModel[];
-  fetchUsers: (userId: string) => Promise<void>;
+  fetchData: (userId: string) => Promise<void>;
   setUsers: React.Dispatch<React.SetStateAction<UsersModel[]>>;
+  updateAvatar: (avatarUrl: string) => Promise<void>;
+  loading: boolean;
 }
 
 export const useUsers = (): UsersData => {
   const [usersData, setUsersData] = useState<UsersModel[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const user = useUser();
 
-  console.log('user', user);
-
-  const fetchUsers = async (userId: string) => {
+  const fetchData = async (userId: string) => {
     try {
       if (userId) {
         const response = await fetch(`/api/userData/?user_id=${userId}`);
@@ -28,22 +29,59 @@ export const useUsers = (): UsersData => {
         const { data } = await response.json();
 
         setUsersData(data);
+        setLoading(false);
       }
     } catch (error) {
       console.error(error);
       setUsersData([]);
+      setLoading(false);
+    }
+  };
+
+  const updateAvatar = async (avatarUrl: string) => {
+    try {
+      if (user) {
+        const response = await fetch('/api/updateAvatar', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            avatar_url: avatarUrl,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update avatar');
+        }
+        const { data } = await response.json();
+
+        setUsersData((prev) => {
+          if (!prev) {
+            return [];
+          }
+          return [...prev, data];
+        });
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+      setUsersData([]);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (user) {
-      fetchUsers(user.id);
+      fetchData(user.id);
     }
   }, [user]);
 
   return {
     usersModel: usersData,
-    fetchUsers,
+    fetchData,
     setUsers: setUsersData,
+    updateAvatar,
+    loading,
   };
 };
