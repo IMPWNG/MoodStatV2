@@ -44,7 +44,7 @@ const SidebarHeader = (props: ISidebarHeaderProps) => {
       />
 
       <div className="flex flex-1 flex-col overflow-hidden bg-white p-4 lg:p-4">
-        <header className="flex h-16 items-center justify-between bg-transparent">
+        <header className="flex h-16 items-center justify-between rounded-2xl bg-white p-4 shadow-xl">
           <div className="flex flex-1 items-center justify-center lg:flex-none lg:justify-start">
             <Link href="/">
               <Logo />

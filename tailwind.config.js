@@ -1,5 +1,9 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies, global-require */
-module.exports = {
+
+const withMT = require('@material-tailwind/react/utils/withMT');
+
+module.exports = withMT({
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontSize: {
@@ -55,9 +59,20 @@ module.exports = {
           'red-700': '#B91C1C',
           'yellow-500': '#F59E0B',
         },
+        dark: {
+          100: '#1a1a1a',
+          200: '#333333',
+          300: '#4d4d4d',
+          400: '#666666',
+          500: '#808080',
+          600: '#999999',
+          700: '#b3b3b3',
+          800: '#cccccc',
+          900: '#e6e6e6',
+        },
       },
     },
   },
   variants: {},
   plugins: [require('@tailwindcss/forms', 'flowbite/plugin')],
-};
+});

@@ -36,7 +36,7 @@ export default async function handler(request: Request) {
 
   const moodState = moods.map((mood) => ({
     role: 'user' as ChatGPTAgent,
-    content: `User mood category: ${mood.category}. Description: ${mood.description}, Rating: ${mood.rating}, Date of addition: ${mood.created_at}.`,
+    content: `My mood category's: ${mood.category}. My mood description's : ${mood.description}, My mood rating's: ${mood.rating}, My mood ate of addition: ${mood.created_at}.`,
   }));
 
   const userPersonality = usersModels.map((usersModel) => ({

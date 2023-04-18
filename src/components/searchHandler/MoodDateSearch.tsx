@@ -17,6 +17,7 @@ const MoodSearchByDate = ({ onDateChange }: DateChangeProps) => {
   const [showModal, setShowModal] = useState(false);
   const { fetchMoods, fetchMoodsByDateRange } = useMoodsContext();
   const user = useUser();
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (from: string, to: string) => {
     if (user && user.id) {
@@ -24,18 +25,29 @@ const MoodSearchByDate = ({ onDateChange }: DateChangeProps) => {
         fetchMoodsByDateRange(user.id, from, to);
       } else {
         fetchMoods(user.id);
+        setLoading(false);
+        setTimeout(() => {
+          setShowModal(false);
+        }, 1000);
       }
-      setShowModal(false);
     }
     onDateChange && onDateChange(from, to);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  const handleOpen = () => {
+    setShowModal(true);
   };
 
   return (
     <div className={styles.container}>
       <button
-        className="mb-1 mr-1 rounded-xl bg-white px-6 py-3 text-sm font-bold uppercase text-black outline-none transition-all duration-150 ease-linear hover:shadow-2xl focus:outline-none"
+        className="mb-1 mr-1 rounded-xl bg-white px-6 py-3 text-sm font-bold uppercase text-black shadow-2xl outline-none transition-all duration-150 ease-linear hover:shadow-2xl focus:outline-none"
         type="button"
-        onClick={() => setShowModal(true)}
+        onClick={handleOpen}
       >
         <FontAwesomeIcon
           icon={faCalendarDays}
@@ -48,7 +60,7 @@ const MoodSearchByDate = ({ onDateChange }: DateChangeProps) => {
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
             <div className="relative mx-auto my-6 w-auto max-w-3xl">
               <div className="relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none">
-                <div className="flex items-center justify-center rounded-t border-b border-solid border-slate-200 p-5">
+                <div className="border-slate-200 flex items-center justify-center rounded-t border-b border-solid p-5">
                   <h3 className="align-center items-center justify-center text-center text-3xl font-semibold">
                     Search by Date
                   </h3>
@@ -77,21 +89,31 @@ const MoodSearchByDate = ({ onDateChange }: DateChangeProps) => {
                   />
                 </div>
 
-                <div className="flex items-center justify-end rounded-b border-t border-solid border-slate-200 p-6">
+                <div className="border-slate-200 flex items-center justify-end rounded-b border-t border-solid p-6">
                   <button
                     className="background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none"
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleClose}
                   >
                     Close
                   </button>
-                  <button
-                    className="mb-1 mr-1 rounded bg-emerald-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-emerald-600"
-                    type="button"
-                    onClick={() => handleDateChange(fromDate, toDate)}
-                  >
-                    Save Dates
-                  </button>
+                  {loading ? (
+                    <button
+                      className="mb-1 mr-1 rounded bg-indigo-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-indigo-500"
+                      type="button"
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : (
+                    <button
+                      className="mb-1 mr-1 rounded bg-indigo-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-indigo-500"
+                      type="button"
+                      onClick={() => handleDateChange(fromDate, toDate)}
+                    >
+                      Save Dates
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

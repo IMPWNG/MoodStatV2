@@ -11,11 +11,13 @@ const Logo = (props: ILogoProps) => {
   const fontStyle = 'font-display font-bold leading-tight text-xl';
 
   return (
-    <p className={`max-w-sm ${fontSize} ${textColor} ${fontStyle}`}>
-      <span className="link link-underline link-underline-black">
-        {AppConfig.site_name}
-      </span>
-    </p>
+    <div className="flex h-full w-full items-center justify-center">
+      <p className={`max-w-sm ${fontSize} ${textColor} ${fontStyle}`}>
+        <span className="link link-underline link-underline-black">
+          &nbsp;&nbsp;{AppConfig.site_name} &nbsp;&nbsp;
+        </span>
+      </p>
+    </div>
   );
 };
 

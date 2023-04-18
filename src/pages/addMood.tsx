@@ -22,11 +22,6 @@ const Index = () => {
           <Section>
             <div className={styles.formGrid}>
               <Form />
-              <Form />
-              <Form />
-              <Form />
-              <Form />
-              <Form />
             </div>
           </Section>
         </Shell>

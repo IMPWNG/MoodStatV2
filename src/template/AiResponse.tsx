@@ -70,36 +70,63 @@ const AiResponse = ({
   //   setEndDate(to);
   // };
 
-  const getMoodsShortenDescriptionByDate = useCallback(() => {
-    const moodsByDate = moods.filter(
-      (mood) =>
-        new Date(mood.created_at).getTime() >= new Date(startDate).getTime() &&
-        new Date(mood.created_at).getTime() <= new Date(endDate).getTime()
-    );
-
-    return moodsByDate.map((mood) =>
+  const getMoodsData = useCallback(() => {
+    const shortenDescription = moods.map((mood) =>
       mood.description
         .split(' ')
         .map((word) => word.slice(0, 3))
         .join(' ')
     );
-  }, [moods, startDate, endDate]);
 
-  const getMoodsShortenDescription = useCallback(() => {
-    return moods.map((mood) =>
-      mood.description
-        .split(' ')
-        .map((word) => word.slice(0, 3))
-        .join(' ')
-    );
+    const category = moods.map((mood) => mood.category);
+
+    const rating = moods.map((mood) => mood.rating);
+
+    return { shortenDescription, category, rating };
   }, [moods]);
 
-  const getAgeOfUsers = useCallback(() => {
-    return usersModels.map((user) => user.age).join('\n');
-  }, [usersModels]);
+  const getUsersData = useCallback(() => {
+    const age = usersModels.map((user) => user.age).join('\n');
+    const gender = usersModels.map((user) => user.gender).join('\n');
+    const name = usersModels.map((user) => user.name).join('\n');
+    const negativeThoughts = usersModels
+      .map((user) => user.negativeThoughtsFrequency)
+      .join('\n');
+    const emotionManagement = usersModels
+      .map((user) => user.emotionManagementDifficulty)
+      .join('\n');
+    const stressFrequency = usersModels
+      .map((user) => user.stressFrequency)
+      .join('\n');
+    const sleepProblem = usersModels
+      .map((user) => user.sleepProblems)
+      .join('\n');
+    const lifeChanges = usersModels
+      .map((user) => user.lifeChangeExperience)
+      .join('\n');
+    const diganosis = usersModels
+      .map((user) => user.diagnosedWithMentalIllness)
+      .join('\n');
+    const supportSystem = usersModels
+      .map((user) => user.supportSystemAvailability)
+      .join('\n');
+    const helpfulActivities = usersModels
+      .map((user) => user.helpfulActivities)
+      .join('\n');
 
-  const getGenderOfUsers = useCallback(() => {
-    return usersModels.map((user) => user.gender).join('\n');
+    return {
+      age,
+      gender,
+      name,
+      negativeThoughts,
+      emotionManagement,
+      stressFrequency,
+      sleepProblem,
+      lifeChanges,
+      diganosis,
+      supportSystem,
+      helpfulActivities,
+    };
   }, [usersModels]);
 
   const handleInput = () => {
@@ -129,6 +156,40 @@ const AiResponse = ({
       ? JSON.parse(localData)
       : { moods: [], usersModels: [] };
 
+    const { shortenDescription, category, rating } = getMoodsData();
+    const {
+      age,
+      gender,
+      name,
+      negativeThoughts,
+      emotionManagement,
+      stressFrequency,
+      sleepProblem,
+      lifeChanges,
+      diganosis,
+      supportSystem,
+      helpfulActivities,
+    } = getUsersData();
+
+    const requestBody = {
+      message,
+      previousReplies: previousRepliesText,
+      shortenDescription,
+      category,
+      rating,
+      age,
+      gender,
+      name,
+      negativeThoughts,
+      emotionManagement,
+      stressFrequency,
+      sleepProblem,
+      lifeChanges,
+      diganosis,
+      supportSystem,
+      helpfulActivities,
+    };
+
     const response = await fetch('/api/response', {
       method: 'POST',
       headers: {
@@ -139,7 +200,7 @@ const AiResponse = ({
         previousReplies: previousRepliesText,
         moods: localMoods,
         usersModels: localUsers,
-        age: getAgeOfUsers(),
+        requestBody,
       }),
     });
 
@@ -204,32 +265,48 @@ const AiResponse = ({
     ) as HTMLTextAreaElement;
 
     if (messageInput) {
+      const moodsData = getMoodsData();
+      const usersData = getUsersData();
+
       messageInput.value = `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture. 
       You are simulating a user speaking to himself, providing a deep analytical view of his thoughts and feelings based on
       several parameters such as : 
-      
-      1. My mood data from ${startDate} to ${endDate}.
-      2. My age ${getAgeOfUsers()}.
-      3. My gender ${getGenderOfUsers()}.
-      4. My thoughts ${
-        startDate && endDate
-          ? getMoodsShortenDescriptionByDate()
-          : getMoodsShortenDescription()
-      }.
-Help me analyze my thoughts and feelings as if I were speaking to myself, providing a deep and insightful understanding.
 
-Rules that you must follow:
+  - Your age: ${usersData.age}
+  - Your gender: ${usersData.gender}
+  - Your name: ${usersData.name}
+  - Your negative thoughts frequency: ${usersData.negativeThoughts}
+  - Your emotion management difficulty: ${usersData.emotionManagement}
+  - Your stress frequency: ${usersData.stressFrequency}
+  - Your sleep problems: ${usersData.sleepProblem}
+  - Your life change experiences: ${usersData.lifeChanges}
+  - Whether you have been diagnosed with a mental illness: ${usersData.diganosis}
+  - Availability of support system: ${usersData.supportSystem}
+  - Activities that are helpful for you: ${usersData.helpfulActivities}
 
-1. You must respond to the user's input.
-2. You must respond to the user's input in a way that is consistent with the user's moods data.
-3. You must respond to the user's input in a way that is consistent with the user's moods data and the user's input.
-4. You must respond to the user's input in a way that is consistent with the user's moods data, the user's input, and the user's input history.
-6. You need to reply like a human, not a bot.
-7. You must never used the word "bot" or "AI" in your response.
-8. You must never use the word "human" or "person" in your response.
-9. You must never use the term mood data in your response.
+  Additionally, I have access to your mood data, which includes the following information:
 
-`;
+  - Mood categories: ${moodsData.category}
+  - Mood descriptions: ${moodsData.shortenDescription}
+  - Mood ratings: ${moodsData.rating}
+
+  Please tell me about your thoughts and feelings as if you were speaking to yourself. I will provide you with a deep and insightful understanding.
+
+  Here are some guidelines for our conversation:
+
+  1. You can share anything that comes to your mind.
+  2. You can be honest and open.
+  3. You can take your time to think and respond.
+  4. You can share your thoughts and feelings in any language.
+  5. You can share your thoughts and feelings in any format.
+  6. You can share your thoughts and feelings in any style.
+  7. You can share your thoughts and feelings in any tone.
+  9. You need to reply like a human, not a bot.
+  10. You must never used the word "bot" or "AI" in your response.
+
+  
+
+    `;
     }
 
     if (previousReplies.length === 1) {
@@ -239,14 +316,7 @@ Rules that you must follow:
 
     setButtonDisabled(false);
     setButtonColor('');
-  }, [
-    getMoodsShortenDescription,
-    getAgeOfUsers,
-    startDate,
-    endDate,
-    getMoodsShortenDescriptionByDate,
-    previousReplies,
-  ]);
+  }, [startDate, endDate, previousReplies]);
 
   // Function to handle the "Enter" key press in the input field, invoking handleSubmit.
   const handleEnter = (
@@ -290,7 +360,7 @@ Rules that you must follow:
                     className={`max-w-sm break-words rounded-lg px-4 py-2 text-sm ${
                       index % 2 === 0
                         ? 'bg-blue-500 text-white'
-                        : 'bg-red-400 text-gray-800'
+                        : 'bg-green-400 text-gray-800'
                     }`}
                   >
                     <p className="leading-normal">{item.content}</p>
@@ -316,7 +386,7 @@ Rules that you must follow:
           })
         : null}
 
-      <div className="container fixed inset-x-0 bottom-0 mx-auto border border-gray-200 bg-white">
+      <div className="container fixed inset-x-0 bottom-0 mx-auto bg-white">
         <div className="flex items-center justify-center space-x-3 px-4 py-3">
           <button
             type="button"

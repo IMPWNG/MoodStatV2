@@ -27,7 +27,10 @@ const Sidebar = (props: ISidebarProps) => {
     'duration-300',
     'ease-in-out',
     'transform',
-    'shadow-xl',
+    'shadow-2xl',
+    'rounded-lg',
+    'border',
+    'border-gray-200',
     {
       'translate-x-0': props.show,
       '-translate-x-full': !props.show,
