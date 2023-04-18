@@ -250,7 +250,7 @@ const AiResponse = ({
       },
     ]);
 
-    messageInput.current!.value = '';
+    messageInput.current!.value = ('' as any) || '';
 
     return Promise.resolve();
   };

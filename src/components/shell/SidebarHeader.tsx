@@ -43,7 +43,7 @@ const SidebarHeader = (props: ISidebarHeaderProps) => {
         tabIndex={-1}
       />
 
-      <div className="flex flex-1 flex-col overflow-hidden bg-white p-4 lg:p-4">
+      <div className="flex flex-1 flex-col overflow-hidden bg-gray-200 p-4 lg:p-4">
         <header className="flex h-16 items-center justify-between rounded-2xl bg-white p-4 shadow-xl">
           <div className="flex flex-1 items-center justify-center lg:flex-none lg:justify-start">
             <Link href="/">

@@ -4,10 +4,15 @@
 
 @tailwind utilities;
 
+html {
+background-color: #edf2f7;
+}
+
 /* Style for the container */
 .container {
 
   margin: 0 auto;
+background-color: #edf2f7;
 
 
  
@@ -48,10 +53,11 @@
 /* Style for the form container */
 .form-container {
   border-radius: 10px;
-  border: 1px solid #ccc;
-  background-image: linear-gradient(135deg, #84C1FF 0%, #B8D3FE 50%, #E1E9FF 100%);
+ 
+  background-image: #fff;
   padding: 30px;
   margin: 20px 0;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Style for the form title */
@@ -76,6 +82,10 @@
   font-weight: 600;
   color: #333;
   margin-bottom: 10px;
+  justify-content: center;  
+  align-items: center;
+  display: flex;
+
 }
 
 /* Style for the form input */
@@ -143,6 +153,11 @@
   margin-top: 30px;
   cursor: pointer;
   outline: none;
+    justify-content: center;
+  align-items: center;
+  display: flex;
+  items-align: center;
+
 }
 
 /* Style for the form submit button when disabled */
@@ -150,6 +165,11 @@
   background-color: #ccc;
   color: #666;
   cursor: not-allowed;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  items-align: center;
+  
 }
 
 /* Style for the form error message */

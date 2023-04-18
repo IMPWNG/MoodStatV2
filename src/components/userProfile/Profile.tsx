@@ -44,52 +44,53 @@ const Profile = () => {
             </Typography>
             <MenuItem className="mt-4 flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                👤 Age: {user.age}
+                👤 &nbsp;{user.age}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                ⚤ Gender: {user.gender}
+                ⚤ &nbsp;{user.gender}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                💭 Ntf: {user.negativeThoughtsFrequency}
+                💭 &nbsp;{user.negativeThoughtsFrequency}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                😥 Emd: {user.emotionManagementDifficulty ? 'Yes' : 'No'}
+                😥 &nbsp;{user.emotionManagementDifficulty ? 'Yes' : 'No'}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                😓 Sf: {user.stressFrequency}
+                😓 &nbsp;{user.stressFrequency}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                💤 Sp: {user.sleepProblems ? 'Yes' : 'No'}
+                💤 &nbsp;{user.sleepProblems ? 'Yes' : 'No'}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                🔄 Lce: {user.lifeChangeExperience}
+                🔄 &nbsp;{user.lifeChangeExperience}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                🏥 Dmi: {user.diagnosedWithMentalIllness ? 'Yes' : 'No'}
+                🏥 &nbsp;
+                {user.diagnosedWithMentalIllness ? 'Yes' : 'No'}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                🤝 Ssa: {user.supportSystemAvailability ? 'Yes' : 'No'}
+                🤝 &nbsp;{user.supportSystemAvailability ? 'Yes' : 'No'}
               </Typography>
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Typography variant="small" className="font-normal">
-                🎉 Ha {user.helpfulActivities}
+                🎉 &nbsp;{user.helpfulActivities}
               </Typography>
             </MenuItem>
 

@@ -17,7 +17,7 @@ import { AppConfig } from '@/utils/AppConfig';
 
 const Loader = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-white">
+    <div className="flex h-screen items-center justify-center bg-gray-200">
       <div className="flex flex-col items-center justify-center space-y-4">
         <div className="h-12 w-12 animate-spin rounded-full border-r-4 border-t-4 border-solid border-blue-500" />
         <h1 className="text-2xl font-bold text-gray-900">
