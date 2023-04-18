@@ -15,13 +15,14 @@
 
 'use client';
 
-import { faHeart, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import { faStaffSnake } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHeart,
+  faPaperPlane,
+  faTrashAlt,
+} from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { FormElement } from '@/components/form/FormElement';
-import { MoodSearchByDate } from '@/components/searchHandler/MoodDateSearch';
 import { useMoods } from '@/hooks/useMoods';
 import { useUsers } from '@/hooks/useUserData';
 import type { Mood } from '@/types/moodTypes';
@@ -41,8 +42,8 @@ const AiResponse = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const [buttonColor, setButtonColor] = useState('transparent');
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
+  const [startDate] = useState<string>('');
+  const [endDate] = useState<string>('');
   const [userTyped, setUserTyped] = useState<boolean>(false);
   const { setMoods } = useMoods();
   const { setUsers } = useUsers();
@@ -63,28 +64,34 @@ const AiResponse = ({
     localStorage.setItem('data', JSON.stringify(data));
   }, [moods, usersModels]);
 
-  const handleDateChange = (from: string, to: string) => {
-    console.log(`Date changed from ${from} to ${to}`);
-    setStartDate(from);
-    setEndDate(to);
-  };
+  // const handleDateChange = (from: string, to: string) => {
+  //   console.log(`Date changed from ${from} to ${to}`);
+  //   setStartDate(from);
+  //   setEndDate(to);
+  // };
 
-  const getMoodsCategoryByDate = useCallback(
-    (startDate: string, endDate: string) => {
-      return moods
-        .filter(
-          (mood) =>
-            mood.created_at >= startDate &&
-            mood.created_at <= `${endDate} 23:59:59`
-        )
-        .map((mood) => mood.category)
-        .join('\n');
-    },
-    [moods]
-  );
+  const getMoodsShortenDescriptionByDate = useCallback(() => {
+    const moodsByDate = moods.filter(
+      (mood) =>
+        new Date(mood.created_at).getTime() >= new Date(startDate).getTime() &&
+        new Date(mood.created_at).getTime() <= new Date(endDate).getTime()
+    );
 
-  const getMoodsDescription = useCallback(() => {
-    return moods.map((mood) => mood.description).join('\n');
+    return moodsByDate.map((mood) =>
+      mood.description
+        .split(' ')
+        .map((word) => word.slice(0, 3))
+        .join(' ')
+    );
+  }, [moods, startDate, endDate]);
+
+  const getMoodsShortenDescription = useCallback(() => {
+    return moods.map((mood) =>
+      mood.description
+        .split(' ')
+        .map((word) => word.slice(0, 3))
+        .join(' ')
+    );
   }, [moods]);
 
   const getAgeOfUsers = useCallback(() => {
@@ -189,7 +196,7 @@ const AiResponse = ({
 
   const handleButtonClickResume = useCallback(async () => {
     setButtonDisabled(true);
-    setButtonColor('red');
+    setButtonColor('rgba(150, 150, 150, 0.5)');
     setDisplayOnlyResponse(true);
 
     const messageInput = document.getElementById(
@@ -201,13 +208,13 @@ const AiResponse = ({
       You are simulating a user speaking to himself, providing a deep analytical view of his thoughts and feelings based on
       several parameters such as : 
       
-      1. The user's mood data from ${startDate} to ${endDate}.
-      2. The user's age ${getAgeOfUsers()}.
-      3. The user's gender ${getGenderOfUsers()}.
-      4. The user's thoughts ${
+      1. My mood data from ${startDate} to ${endDate}.
+      2. My age ${getAgeOfUsers()}.
+      3. My gender ${getGenderOfUsers()}.
+      4. My thoughts ${
         startDate && endDate
-          ? getMoodsCategoryByDate(startDate, endDate)
-          : getMoodsDescription()
+          ? getMoodsShortenDescriptionByDate()
+          : getMoodsShortenDescription()
       }.
 Help me analyze my thoughts and feelings as if I were speaking to myself, providing a deep and insightful understanding.
 
@@ -233,11 +240,11 @@ Rules that you must follow:
     setButtonDisabled(false);
     setButtonColor('');
   }, [
-    getMoodsDescription,
+    getMoodsShortenDescription,
     getAgeOfUsers,
     startDate,
     endDate,
-    getMoodsCategoryByDate,
+    getMoodsShortenDescriptionByDate,
     previousReplies,
   ]);
 
@@ -263,9 +270,6 @@ Rules that you must follow:
 
   return (
     <>
-      <div className="mb-4 flex flex-col">
-        <MoodSearchByDate onDateChange={handleDateChange} />
-      </div>
       {response
         ? response.map((item, index) => {
             if (displayOnlyResponse && index % 2 === 0) {
@@ -312,43 +316,42 @@ Rules that you must follow:
           })
         : null}
 
-      <div className="fixed inset-x-0 bottom-0 bg-white bg-opacity-40 shadow-md">
-        <div className="container mx-auto flex items-center justify-center px-4 py-3">
-          <div className="flex items-center">
-            <button
-              type="button"
-              className="mr-3 rounded-full bg-gray-200 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
-              onClick={async () => {
-                if (!buttonDisabled) {
-                  await handleButtonClickResume();
-                }
-              }}
-              title="View Resume"
-              disabled={buttonDisabled}
-              style={{ backgroundColor: buttonColor }}
-            >
-              <FontAwesomeIcon
-                icon={faHeart}
-                style={{ color: '#667eea' }}
-                size="2x"
-              />
-              <span className="sr-only">Resume</span>
-            </button>
+      <div className="container fixed inset-x-0 bottom-0 mx-auto border border-gray-200 bg-white">
+        <div className="flex items-center justify-center space-x-3 px-4 py-3">
+          <button
+            type="button"
+            className="rounded-full  p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+            onClick={async () => {
+              if (!buttonDisabled) {
+                await handleButtonClickResume();
+              }
+            }}
+            title="View Resume"
+            disabled={buttonDisabled}
+            style={{ backgroundColor: buttonColor }}
+          >
+            <FontAwesomeIcon
+              icon={faHeart}
+              style={{ color: '#667eea' }}
+              size="2x"
+            />
+            <span className="sr-only">Resume</span>
+          </button>
 
-            <button
-              type="button"
-              className="mr-3 rounded-full bg-gray-400 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
-              onClick={handleReset}
-            >
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                style={{ color: '#EA6666' }}
-                size="2xl"
-              />
-              <span className="sr-only">Clear</span>
-            </button>
-          </div>
-          <FormElement colSpanSize="sm:col-span-4">
+          <button
+            type="button"
+            className="rounded-full p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+            onClick={handleReset}
+          >
+            <FontAwesomeIcon
+              icon={faTrashAlt}
+              style={{ color: '#EA6666' }}
+              size="2x"
+            />
+            <span className="sr-only">Clear</span>
+          </button>
+
+          <div className="relative flex-grow sm:max-w-xs">
             <textarea
               id="message-input"
               name="message"
@@ -357,16 +360,17 @@ Rules that you must follow:
               ref={messageInput}
               onInput={handleInput}
               placeholder='"Select a date range to view your moods"'
-              className="focus:shadow-outline-blue h-full w-full resize-none rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:placeholder:text-gray-600"
+              className="focus:shadow-outline-blue w-full resize-none rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:placeholder:text-gray-600"
             />
-          </FormElement>
+          </div>
+
           <button
             type="submit"
-            className="ml-3 rounded-full bg-gray-400 p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
+            className="rounded-full  p-3 transition-colors duration-300 hover:bg-gray-300 hover:text-white focus:outline-none"
           >
             <FontAwesomeIcon
-              icon={faStaffSnake}
-              size="2xl"
+              icon={faPaperPlane}
+              size="2x"
               style={{ color: '#667eea' }}
             />
             <span className="sr-only">Send</span>

@@ -31,7 +31,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     >
       <MoodsProvider>
         <SWRConfig value={{ fetcher }}>
-          <Component {...pageProps} />
+          <div className="container">
+            <Component {...pageProps} />
+          </div>
         </SWRConfig>
       </MoodsProvider>
     </SessionContextProvider>

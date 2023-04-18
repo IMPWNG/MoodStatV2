@@ -1,22 +1,22 @@
 import className from 'classnames';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { ToggleMenuButton } from '@/components/button/ToggleMenuButton';
+import { Logo } from '@/template/Logo';
 import { useMenu } from '@/utils/Navigation';
 
 import { Profile } from '../userProfile/Profile';
-import { Sidebar } from './Sidebar';
 
 type ISidebarHeaderProps = {
-  topLinks: ReactNode;
-  bottomLinks: ReactNode;
+  topLinks?: ReactNode;
+  bottomLinks?: ReactNode;
   title: string;
   leftContent: ReactNode;
   children: ReactNode;
 };
 
 const SidebarHeader = (props: ISidebarHeaderProps) => {
-  const { showMenu, handleToggleMenu, handleClose } = useMenu();
+  const { showMenu, handleClose } = useMenu();
 
   const clickableBgClass = className(
     'fixed',
@@ -43,22 +43,33 @@ const SidebarHeader = (props: ISidebarHeaderProps) => {
         tabIndex={-1}
       />
 
-      <Sidebar
-        show={showMenu}
-        topLinks={props.topLinks}
-        bottomLinks={props.bottomLinks}
-      />
-
-      <div className="flex flex-1 flex-col overflow-hidden bg-primary-100">
-        <header className="flex h-16 items-center justify-between bg-gray-100 p-3 sm:px-5 lg:px-6">
-          <div className="mr-2 lg:hidden">
-            <ToggleMenuButton onClick={handleToggleMenu} />
+      <div className="flex flex-1 flex-col overflow-hidden bg-white p-4 lg:p-4">
+        <header className="flex h-16 items-center justify-between bg-transparent">
+          <div className="flex flex-1 items-center justify-center lg:flex-none lg:justify-start">
+            <Link href="/">
+              <Logo />
+            </Link>
           </div>
 
-          <div className="text-lg font-bold text-gray-900">{props.title}</div>
+          <div className="ml-auto flex items-center justify-between space-x-4">
+            <Link href="/addMood">
+              <p className="font-display max-w-sm text-xl font-bold leading-tight">
+                <span className="link link-underline link-underline-black text-black">
+                  &nbsp;&nbsp;Add Mood &nbsp;&nbsp;
+                </span>
+              </p>
+            </Link>
+            <Link href="/aiResponse">
+              <p className="font-display max-w-sm text-xl font-bold leading-tight">
+                <span className="link link-underline link-underline-black text-black">
+                  &nbsp;&nbsp;AI&nbsp;&nbsp;
+                </span>
+              </p>
+            </Link>
 
-          <div className="ml-auto">{props.leftContent}</div>
-          <div className="ml-2">
+            {props.leftContent}
+          </div>
+          <div className="ml-10">
             <Profile />
           </div>
         </header>
