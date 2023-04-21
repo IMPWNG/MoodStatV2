@@ -190,7 +190,7 @@ const AiResponse = ({
       helpfulActivities,
     };
 
-    const response = await fetch('/api/response', {
+    const response = await fetch('/api/aiResponse', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

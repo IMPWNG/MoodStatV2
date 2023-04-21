@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable import/no-extraneous-dependencies */
 import className from 'classnames';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
